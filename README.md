@@ -41,6 +41,12 @@ dotnet tool install --global --add-source ./nupkg solrevdev.seedfolder
 
 ```
 
+Normally via NuGet
+
+```powershell
+dotnet tool install --global solrevdev.seedfolder
+```
+
 To uninstall
 
 ```powershell
@@ -49,4 +55,10 @@ dotnet tool uninstall -g solrevdev.seedfolder
 
 ## Publish to Nuget
 
-https://www.meziantou.net/how-to-publish-a-dotnet-global-tool-with-dotnet-core-2-1.htm
+Uses a GitHub secret to store a `NUGET_API_KEY` API Key created over at NuGet in order to build and deploy via GitHub actions to NuGet.
+
+When you commit bump the version in the `csproj` file
+
+```xml
+<Version>1.0.1</Version>
+```
