@@ -8,7 +8,7 @@
     <PackageOutputPath>./nupkg</PackageOutputPath>
     <NoDefaultExcludes>true</NoDefaultExcludes>
 
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <Title>solrevdev.seedfolder</Title>
     <Description>.NET Core Global Tool that creates a folder with my naming convention and copies dotfiles into it therefore seeding a folder.</Description>
     <PackageDescription>.NET Core Global Tool that creates a folder with my naming convention and copies dotfiles into it therefore seeding a folder.</PackageDescription>
@@ -35,6 +35,8 @@
     <Content Remove="Data/gitignore" />
     <Content Remove="Data/prettierignore" />
     <Content Remove="Data/prettierrc" />
+<Content Remove="Data/omnisharp.json" />
+
   </ItemGroup>
 
   <ItemGroup>
@@ -44,6 +46,8 @@
     <EmbeddedResource Include="Data/gitignore" />
     <EmbeddedResource Include="Data/prettierignore" />
     <EmbeddedResource Include="Data/prettierrc" />
+<EmbeddedResource Include="Data/omnisharp.json" />
+
   </ItemGroup>
 
 </Project>

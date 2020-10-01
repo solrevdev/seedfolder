@@ -1,5 +1,6 @@
 {
     "cSpell.words": [
+        "Decompilation",
         "Figgle",
         "Nuget",
         "Trello",
@@ -8,6 +9,7 @@
         "editorconfig",
         "gitattributes",
         "nupkg",
+        "omnisharp",
         "prettierignore",
         "prettierrc",
         "repo's",
