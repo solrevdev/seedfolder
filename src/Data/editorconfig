@@ -136,7 +136,7 @@ csharp_space_between_square_brackets = false
 csharp_prefer_simple_using_statement = false:suggestion
 
 # guidelines support
-guidelines = 80, 120s
+guidelines = 80, 120
 
 # CA1031: Do not catch general exception types
 dotnet_diagnostic.CA1031.severity = none
