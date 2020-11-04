@@ -113,10 +113,7 @@ namespace solrevdev.seedfolder
             }
         }
 
-        private static string RemoveSpaces(string name, char replacement = '-')
-        {
-            return name.Replace(' ', replacement);
-        }
+        private static string RemoveSpaces(string name, char replacement = '-') => name.Replace(' ', replacement);
 
         private static string SafeNameForFileSystem(string name, char replace = '-')
         {
