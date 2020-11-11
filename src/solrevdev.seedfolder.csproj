@@ -2,13 +2,13 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>seedfolder</ToolCommandName>
     <PackageOutputPath>./nupkg</PackageOutputPath>
     <NoDefaultExcludes>true</NoDefaultExcludes>
 
-    <Version>1.0.6</Version>
+    <Version>1.0.7</Version>
     <Title>solrevdev.seedfolder</Title>
     <Description>.NET Core Global Tool that creates a folder with my naming convention and copies dotfiles into it therefore seeding a folder.</Description>
     <PackageDescription>.NET Core Global Tool that creates a folder with my naming convention and copies dotfiles into it therefore seeding a folder.</PackageDescription>
