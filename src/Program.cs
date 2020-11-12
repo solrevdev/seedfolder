@@ -17,10 +17,10 @@ namespace solrevdev.seedfolder
 
             if (args?.Length > 0)
             {
-                Console.WriteLine($"▲   Found {args?.Length} params to process");
+                WriteLine($"▲   Found {args?.Length} params to process");
             }
 
-            Console.WriteLine($"▲   Running in the path {Directory.GetCurrentDirectory()}");
+            WriteLine($"▲   Running in the path {Directory.GetCurrentDirectory()}");
 
             var sb = new StringBuilder();
             var trelloCard = Prompt.GetString("▲   Enter the Trello card reference or leave empty if none exists");
@@ -35,11 +35,11 @@ namespace solrevdev.seedfolder
                 sb.Append(trelloCard.ToUpper());
             }
 
-            sb.Append("_");
+            sb.Append('_');
 
             if (string.IsNullOrWhiteSpace(folderName))
             {
-                Console.WriteLine("▲   You must enter a folder name.", System.Drawing.Color.DarkRed);
+                WriteLine("▲   You must enter a folder name.", ConsoleColor.DarkRed);
                 return;
             }
             else
@@ -52,35 +52,49 @@ namespace solrevdev.seedfolder
             var finalFolderName = sb.ToString();
             if (Directory.Exists(finalFolderName))
             {
-                Console.WriteLine($"▲   Sorry but {finalFolderName} already exists.", System.Drawing.Color.DarkRed);
+                WriteLine($"▲   Sorry but {finalFolderName} already exists.", ConsoleColor.DarkRed);
                 return;
             }
 
-            Console.WriteLine($"‍▲   Creating the directory {finalFolderName}");
+            WriteLine($"‍▲   Creating the directory {finalFolderName}");
             Directory.CreateDirectory(finalFolderName);
 
-            Console.WriteLine($"‍▲   Copying .dockerignore to {finalFolderName}{Path.DirectorySeparatorChar}.dockerignore");
+            WriteLine($"‍▲   Copying .dockerignore to {finalFolderName}{Path.DirectorySeparatorChar}.dockerignore");
             await WriteFile("dockerignore", $"{finalFolderName}{Path.DirectorySeparatorChar}.dockerignore").ConfigureAwait(false);
 
-            Console.WriteLine($"‍▲   Copying .editorconfig to {finalFolderName}{Path.DirectorySeparatorChar}.editorconfig");
+            WriteLine($"‍▲   Copying .editorconfig to {finalFolderName}{Path.DirectorySeparatorChar}.editorconfig");
             await WriteFile("editorconfig", $"{finalFolderName}{Path.DirectorySeparatorChar}.editorconfig").ConfigureAwait(false);
 
-            Console.WriteLine($"‍▲   Copying .gitattributes to {finalFolderName}{Path.DirectorySeparatorChar}.gitattributes");
+            WriteLine($"‍▲   Copying .gitattributes to {finalFolderName}{Path.DirectorySeparatorChar}.gitattributes");
             await WriteFile("gitattributes", $"{finalFolderName}{Path.DirectorySeparatorChar}.gitattributes").ConfigureAwait(false);
 
-            Console.WriteLine($"‍▲   Copying .gitignore to {finalFolderName}{Path.DirectorySeparatorChar}.gitignore");
+            WriteLine($"‍▲   Copying .gitignore to {finalFolderName}{Path.DirectorySeparatorChar}.gitignore");
             await WriteFile("gitignore", $"{finalFolderName}{Path.DirectorySeparatorChar}.gitignore").ConfigureAwait(false);
 
-            Console.WriteLine($"‍▲   Copying .prettierignore to {finalFolderName}{Path.DirectorySeparatorChar}.prettierignore");
+            WriteLine($"‍▲   Copying .prettierignore to {finalFolderName}{Path.DirectorySeparatorChar}.prettierignore");
             await WriteFile("prettierignore", $"{finalFolderName}{Path.DirectorySeparatorChar}.prettierignore").ConfigureAwait(false);
 
-            Console.WriteLine($"‍▲   Copying .prettierrc to {finalFolderName}{Path.DirectorySeparatorChar}.prettierrc");
+            WriteLine($"‍▲   Copying .prettierrc to {finalFolderName}{Path.DirectorySeparatorChar}.prettierrc");
             await WriteFile("prettierrc", $"{finalFolderName}{Path.DirectorySeparatorChar}.prettierrc").ConfigureAwait(false);
 
-            Console.WriteLine($"‍▲   Copying omnisharp.json to {finalFolderName}{Path.DirectorySeparatorChar}omnisharp.json");
+            WriteLine($"‍▲   Copying omnisharp.json to {finalFolderName}{Path.DirectorySeparatorChar}omnisharp.json");
             await WriteFile("omnisharp.json", $"{finalFolderName}{Path.DirectorySeparatorChar}omnisharp.json").ConfigureAwait(false);
 
-            Console.WriteLine("▲   Done!");
+            WriteLine("▲   Done!");
+        }
+
+        private static void WriteLine(string text, ConsoleColor color = default)
+        {
+            if (color == default)
+            {
+                Console.WriteLine(text);
+            }
+            else
+            {
+                Console.ForegroundColor = color;
+                Console.WriteLine(text);
+                Console.ResetColor();
+            }
         }
 
         private static async Task WriteFile(string filename, string destination)
@@ -100,16 +114,16 @@ namespace solrevdev.seedfolder
         private static void ShowHeader()
         {
             var programTitle = FiggleFonts.Standard.Render("seedfolder");
-            Console.WriteLine(programTitle, System.Drawing.Color.DarkGreen);
+            WriteLine(programTitle, ConsoleColor.DarkGreen);
 
-            WriteLines();
+            AppendBlankLines();
         }
 
-        private static void WriteLines(int howMany = 2)
+        private static void AppendBlankLines(int howMany = 2)
         {
             for (var i = 0; i <= howMany; i++)
             {
-                Console.WriteLine("");
+                WriteLine("");
             }
         }
 

@@ -24,8 +24,8 @@
 
   <ItemGroup>
     <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="3.0.0" />
-    <PackageReference Include="Colorful.Console" Version="1.2.10" />
-    <PackageReference Include="Figgle" Version="0.3.0" />
+    <PackageReference Include="Colorful.Console" Version="1.2.11" />
+    <PackageReference Include="Figgle" Version="0.4.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -46,8 +46,7 @@
     <EmbeddedResource Include="Data/gitignore" />
     <EmbeddedResource Include="Data/prettierignore" />
     <EmbeddedResource Include="Data/prettierrc" />
-<EmbeddedResource Include="Data/omnisharp.json" />
-
+    <EmbeddedResource Include="Data/omnisharp.json" />
   </ItemGroup>
 
 </Project>
