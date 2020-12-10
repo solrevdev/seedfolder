@@ -22,12 +22,13 @@ jobs:
         if: github.event_name == 'push' && contains(toJson(github.event.commits), '***NO_CI***') == false && contains(toJson(github.event.commits), '[ci skip]') == false && contains(toJson(github.event.commits), '[skip ci]') == false
         runs-on: windows-latest
         env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
           DOTNET_CLI_TELEMETRY_OPTOUT: 1
           DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
           DOTNET_NOLOGO: true
           DOTNET_GENERATE_ASPNET_CERTIFICATE: false
           DOTNET_ADD_GLOBAL_TOOLS_TO_PATH: false
-          DOTNET_MULTILEVEL_LOOKUP: 0
+          DOTNET_MULTILEVEL_LOOKUP: 0          
           
         steps:
             - name: checkout code
