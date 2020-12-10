@@ -11,15 +11,54 @@
 
 ## Overview
 
-This is a .NET Core Global Tool that will create a folder named after either a Trello card reference or the current
-Date in a YYYY-MM-DD format followed by the folder name and copy some default standard dotfiles over.
+This is a .NET Core Global Tool that will create a folder named after either the first argument passed to it or if no
+argument is passed it will ask you for the folder name. It will then copy some default standard dotfiles over.
 
 For example:
 
+```bash
+seedfolder
+dotnet run --project src/solrevdev.seedfolder.csproj
+▲   Do you want to prefix the folder with the date? [Y/n] y
+▲   What do you want the folder to be named? temp
+‍▲   Creating the directory 2020-12-10_temp
+‍▲   Copying .dockerignore to 2020-12-10_temp/.dockerignore
+‍▲   Copying .editorconfig to 2020-12-10_temp/.editorconfig
+‍▲   Copying .gitattributes to 2020-12-10_temp/.gitattributes
+‍▲   Copying .gitignore to 2020-12-10_temp/.gitignore
+‍▲   Copying .prettierignore to 2020-12-10_temp/.prettierignore
+‍▲   Copying .prettierrc to 2020-12-10_temp/.prettierrc
+‍▲   Copying omnisharp.json to 2020-12-10_temp/omnisharp.json
+▲   Done!
 
-`MO-818_create-dotnet-tool`
+seedfolder
+dotnet run --project src/solrevdev.seedfolder.csproj
+▲   Do you want to prefix the folder with the date? [Y/n] n
+▲   What do you want the folder to be named? temp
+‍▲   Creating the directory temp
+‍▲   Copying .dockerignore to temp/.dockerignore
+‍▲   Copying .editorconfig to temp/.editorconfig
+‍▲   Copying .gitattributes to temp/.gitattributes
+‍▲   Copying .gitignore to temp/.gitignore
+‍▲   Copying .prettierignore to temp/.prettierignore
+‍▲   Copying .prettierrc to temp/.prettierrc
+‍▲   Copying omnisharp.json to temp/omnisharp.json
+▲   Done!
 
-`2020-09-29_create-dotnet-tool`
+seedfolder temp
+dotnet run --project src/solrevdev.seedfolder.csproj temp
+▲   Found 1 params to process.
+‍▲   Creating the directory temp
+‍▲   Copying .dockerignore to temp/.dockerignore
+‍▲   Copying .editorconfig to temp/.editorconfig
+‍▲   Copying .gitattributes to temp/.gitattributes
+‍▲   Copying .gitignore to temp/.gitignore
+‍▲   Copying .prettierignore to temp/.prettierignore
+‍▲   Copying .prettierrc to temp/.prettierrc
+‍▲   Copying omnisharp.json to temp/omnisharp.json
+▲   Done!
+
+```
 
 It will also copy the following dotfiles over:
 

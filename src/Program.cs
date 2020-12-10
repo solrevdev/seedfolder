@@ -15,27 +15,28 @@ namespace solrevdev.seedfolder
         {
             ShowHeader();
 
-            if (args?.Length > 0)
-            {
-                WriteLine($"▲   Found {args?.Length} params to process");
-            }
-
             WriteLine($"▲   Running in the path {Directory.GetCurrentDirectory()}");
 
+            var folderName = "";
+
+            if (args?.Length > 0)
+            {
+                WriteLine($"▲   Found {args?.Length} params to process. ");
+                folderName = args[0];
+            }
+
             var sb = new StringBuilder();
-            var trelloCard = Prompt.GetString("▲   Enter the Trello card reference or leave empty if none exists");
-            var folderName = Prompt.GetString("▲   Enter the folder name to appear after the Trello reference if exists");
-
-            if (string.IsNullOrWhiteSpace(trelloCard))
+            if (string.IsNullOrWhiteSpace(folderName))
             {
-                sb.Append(DateTime.Now.Year).Append('-').AppendFormat("{0:d2}", DateTime.Now.Month).Append('-').AppendFormat("{0:d2}", DateTime.Now.Day);
-            }
-            else
-            {
-                sb.Append(trelloCard.ToUpper());
-            }
+                var prefixWithDate = Prompt.GetYesNo("▲   Do you want to prefix the folder with the date?", defaultAnswer: true);
+                if (prefixWithDate)
+                {
+                    sb.Append(DateTime.Now.Year).Append('-').AppendFormat("{0:d2}", DateTime.Now.Month).Append('-').AppendFormat("{0:d2}", DateTime.Now.Day);
+                    sb.Append('_');
+                }
 
-            sb.Append('_');
+                folderName = Prompt.GetString("▲   What do you want the folder to be named?");
+            }
 
             if (string.IsNullOrWhiteSpace(folderName))
             {
