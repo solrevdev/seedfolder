@@ -1,5 +1,8 @@
 # Solrevdev.SeedFolder
 
+[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/solrevdev/seedfolder) [![GitHub last commit](https://img.shields.io/github/last-commit/solrevdev/seedfolder)](https://github.com/solrevdev/seedfolder) [![CI](https://github.com/solrevdev/seedfolder/workflows/CI/badge.svg)](https://github.com/solrevdev/seedfolder) [![Twitter Follow](https://img.shields.io/twitter/follow/solrevdev?label=Follow&style=social)](https://twitter.com/solrevdev)
+
+
 ```
                      _  __       _     _
   ___  ___  ___  __| |/ _| ___ | | __| | ___ _ __
