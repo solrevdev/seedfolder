@@ -28,20 +28,20 @@ jobs:
           DOTNET_NOLOGO: true
           DOTNET_GENERATE_ASPNET_CERTIFICATE: false
           DOTNET_ADD_GLOBAL_TOOLS_TO_PATH: false
-          DOTNET_MULTILEVEL_LOOKUP: 0          
-          
+          DOTNET_MULTILEVEL_LOOKUP: 0
+
         steps:
             - name: checkout code
-              uses: actions/checkout@v2           
+              uses: actions/checkout@v2
 
             - name: setup .net core sdk
               uses: actions/setup-dotnet@v1
               with:
-                  dotnet-version:  '5.0.x' # SDK Version to use; x will use the latest version of the 3.1 channel
+                  dotnet-version:  '6.0.x' # SDK Version to use; x will use the latest version of the 3.1 channel
 
             - name: dotnet build
               run: dotnet build solrevdev.seedfolder.sln --configuration Release
-            
+
             - name: dotnet pack
               run: dotnet pack solrevdev.seedfolder.sln -c Release --no-build --include-source --include-symbols
 
