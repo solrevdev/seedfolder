@@ -83,6 +83,14 @@ dotnet_naming_style.camel_case_underscore_style.capitalization = camel_case
 dotnet_sort_system_directives_first = true
 csharp_preserve_single_line_blocks = true
 csharp_preserve_single_line_statements = false
+dotnet_separate_import_directive_groups = false
+
+# IDE0005: Remove unnessecary using statements
+dotnet_diagnostic.IDE0005.severity = warning
+
+# IDE0160: Convert to block-scoped namespace (other option is file_scoped:warning)
+#dotnet_diagnostic.IDE0160.severity = warning
+#csharp_style_namespace_declarations = block_scoped:warning
 
 # Expression-level preferences
 dotnet_style_object_initializer = true:suggestion
