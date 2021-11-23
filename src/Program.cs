@@ -1,11 +1,7 @@
-﻿using System;
-using System.IO;
-using McMaster.Extensions.CommandLineUtils;
+﻿using McMaster.Extensions.CommandLineUtils;
 using Figgle;
 using System.Text;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace solrevdev.seedfolder
 {
