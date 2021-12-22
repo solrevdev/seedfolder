@@ -9,7 +9,7 @@
     <ToolCommandName>seedfolder</ToolCommandName>
     <PackageOutputPath>./nupkg</PackageOutputPath>
     <NoDefaultExcludes>true</NoDefaultExcludes>
-    <Version>1.1.5</Version>
+    <Version>1.1.6</Version>
     <Title>solrevdev.seedfolder</Title>
     <Description>.NET Core Global Tool that creates a folder and copies dotfiles into it therefore seeding a folder.</Description>
     <PackageDescription>.NET Core Global Tool that creates a folder and copies dotfiles into it therefore seeding a folder.</PackageDescription>
