@@ -48,5 +48,4 @@
     <EmbeddedResource Include="Data/prettierrc" />
     <EmbeddedResource Include="Data/omnisharp.json" />
   </ItemGroup>
-
 </Project>
