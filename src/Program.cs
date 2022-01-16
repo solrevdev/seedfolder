@@ -2,6 +2,7 @@
 using Figgle;
 using System.Text;
 using System.Reflection;
+using System.Globalization;
 
 namespace solrevdev.seedfolder
 {
@@ -18,7 +19,7 @@ namespace solrevdev.seedfolder
             if (args?.Length > 0)
             {
                 var opts = new[] { "--help", "-h", "-?", "--version", "-v" };
-                if (opts.Contains(args[0].ToLower()))
+                if (opts.Contains(args[0].ToLower(CultureInfo.InvariantCulture)))
                 {
                     ShowHelp();
                     return;
