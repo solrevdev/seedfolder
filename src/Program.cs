@@ -17,6 +17,13 @@ namespace solrevdev.seedfolder
 
             if (args?.Length > 0)
             {
+                var opts = new[] { "--help", "-h", "-?", "--version", "-v" };
+                if (opts.Contains(args[0].ToLower()))
+                {
+                    ShowHelp();
+                    return;
+                }
+
                 WriteLine($"▲   Found {args?.Length} params to process. ");
                 folderName = args[0];
             }
@@ -78,6 +85,39 @@ namespace solrevdev.seedfolder
             await WriteFile("omnisharp.json", $"{finalFolderName}{Path.DirectorySeparatorChar}omnisharp.json").ConfigureAwait(false);
 
             WriteLine("▲   Done!");
+        }
+
+        private static void ShowHelp()
+        {
+            var version = typeof(Program).GetTypeInfo().Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
+
+            WriteLine($"▲   Version {version}");
+            const string help = @"▲   Usage: dotnet run [folderName]
+
+Passing no folderName will then interactively ask you for the folder name. otherwise it will use the folderName you pass and create a new directory in your current folder.
+
+For example:
+
+seedfolder
+▲   Do you want to prefix the folder with the date? [Y/n] y
+▲   What do you want the folder to be named? temp
+▲   Creating the directory 2020-12-10_temp
+▲   Done!
+
+seedfolder
+▲   Do you want to prefix the folder with the date? [Y/n] n
+▲   What do you want the folder to be named? temp
+▲   Creating the directory temp
+▲   Done!
+
+seedfolder temp
+▲   Found 1 params to process.
+▲   Creating the directory temp
+▲   Done!
+
+seedfolder will also copy various dotfiles to that folder.
+";
+            WriteLine(help);
         }
 
         private static void WriteLine(string text, ConsoleColor color = default)
