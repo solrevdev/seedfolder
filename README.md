@@ -63,7 +63,7 @@ dotnet run --project src/solrevdev.seedfolder.csproj temp
 
 ```
 
-It will also copy the following dotfiles over:
+It will also copy the following dotfiles from the `src/Data` folder over:
 
 * .dockerignore
 * .editorconfig
