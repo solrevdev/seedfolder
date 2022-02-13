@@ -11,7 +11,7 @@ root = true
 insert_final_newline = true
 indent_style = space
 indent_size = 4
-guidelines = 80
+guidelines = 120
 
 
 # C# files
@@ -88,10 +88,6 @@ dotnet_separate_import_directive_groups = false
 # IDE0005: Remove unnessecary using statements
 dotnet_diagnostic.IDE0005.severity = warning
 
-# IDE0160: Convert to block-scoped namespace (other option is file_scoped:warning)
-#dotnet_diagnostic.IDE0160.severity = warning
-#csharp_style_namespace_declarations = block_scoped:warning
-
 # Expression-level preferences
 dotnet_style_object_initializer = true:suggestion
 dotnet_style_collection_initializer = true:suggestion
@@ -145,7 +141,7 @@ csharp_space_between_square_brackets = false
 
 # ---- Latest csharp features ----- #
 
-#new using statement
+# new using statement
 csharp_prefer_simple_using_statement = false:suggestion
 
 # Simplify new expression (IDE0090)
@@ -154,10 +150,28 @@ csharp_style_implicit_object_creation_when_type_is_apparent = false:suggestion
 # Use range operator (IDE0057)
 csharp_style_prefer_range_operator = false:suggestion
 
+# file scoped namespaces
+csharp_style_namespace_declarations = file_scoped
+dotnet_diagnostic.IDE0161.severity = error
+
+# async methods should have "Async" suffix
+dotnet_naming_rule.async_methods_end_in_async.symbols = any_async_methods
+dotnet_naming_rule.async_methods_end_in_async.style = end_in_async
+dotnet_naming_rule.async_methods_end_in_async.severity = error
+
+dotnet_naming_symbols.any_async_methods.applicable_kinds = method
+dotnet_naming_symbols.any_async_methods.applicable_accessibilities = *
+dotnet_naming_symbols.any_async_methods.required_modifiers = async
+
+dotnet_naming_style.end_in_async.required_prefix =
+dotnet_naming_style.end_in_async.required_suffix = Async
+dotnet_naming_style.end_in_async.capitalization = pascal_case
+dotnet_naming_style.end_in_async.word_separator =
+
 # ---- Latest csharp features ----- #
 
 # guidelines support
-guidelines = 80, 120
+guidelines = 120
 
 # CA1031: Do not catch general exception types
 dotnet_diagnostic.CA1031.severity = none
