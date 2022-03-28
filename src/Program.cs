@@ -3,9 +3,8 @@ using Figgle;
 using System.Text;
 using System.Reflection;
 using System.Globalization;
+namespace solrevdev.seedfolder;
 
-namespace solrevdev.seedfolder
-{
     internal static class Program
     {
         public static async Task Main(string[] args)
@@ -173,4 +172,3 @@ seedfolder will also copy various dotfiles to that folder.
             return new string(name.Select(c => invalids.Contains(c) ? replace : c).ToArray());
         }
     }
-}
