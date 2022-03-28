@@ -149,6 +149,7 @@ csharp_style_implicit_object_creation_when_type_is_apparent = false:suggestion
 
 # Use range operator (IDE0057)
 csharp_style_prefer_range_operator = false:suggestion
+csharp_style_prefer_index_operator = false:suggestion
 
 # file scoped namespaces
 csharp_style_namespace_declarations = file_scoped
