@@ -1,23 +1,27 @@
 {
     "cSpell.words": [
-        "Decompilation",
-        "Figgle",
-        "Nuget",
-        "Trello",
         "accessibilities",
+        "ASPNET",
+        "Decompilation",
         "dockerignore",
         "dotfiles",
         "editorconfig",
+        "Figgle",
         "gitattributes",
         "locproj",
         "nativeproj",
+        "NOLOGO",
+        "Nuget",
         "nupkg",
         "omnisharp",
+        "OPTOUT",
         "prettierignore",
         "prettierrc",
         "repo's",
+        "rohith",
         "seedfolder",
         "socio",
-        "solrevdev"
+        "solrevdev",
+        "Trello"
     ]
 }
