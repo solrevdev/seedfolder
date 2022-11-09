@@ -9,7 +9,7 @@
     <ToolCommandName>seedfolder</ToolCommandName>
     <PackageOutputPath>./nupkg</PackageOutputPath>
     <NoDefaultExcludes>true</NoDefaultExcludes>
-    <Version>1.2.1</Version>
+    <Version>1.2.2</Version>
     <Title>solrevdev.seedfolder</Title>
     <Description>.NET Core Global Tool that creates a folder and copies dotfiles into it therefore seeding a folder.</Description>
     <PackageDescription>.NET Core Global Tool that creates a folder and copies dotfiles into it therefore seeding a folder.</PackageDescription>
@@ -20,13 +20,13 @@
     <PackageReleaseNotes>https://github.com/solrevdev/seedfolder/releases</PackageReleaseNotes>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>dotnetcore;;dotnet;csharp;dotnet-global-tool;dotnet-global-tools;</PackageTags>
+    <PackageTags>dotnetcore;dotnet;csharp;dotnet-global-tool;dotnet-global-tools;</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.0.1" />
     <PackageReference Include="Colorful.Console" Version="1.2.15" />
-    <PackageReference Include="Figgle" Version="0.4.0" />
+    <PackageReference Include="Figgle" Version="0.4.1" />
   </ItemGroup>
 
   <ItemGroup>
