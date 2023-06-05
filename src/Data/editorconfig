@@ -169,6 +169,15 @@ dotnet_naming_style.end_in_async.required_suffix = Async
 dotnet_naming_style.end_in_async.capitalization = pascal_case
 dotnet_naming_style.end_in_async.word_separator =
 
+# IDE0290 Use primary constructor
+# https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-12#primary-constructors
+# https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/proposals/primary-constructors
+# will disable this rule for now until I decide if I like it and want to use it.
+# dotnet_diagnostic.IDE0290.severity = none | error | suggestion
+
+# IDE0290 Use primary constructor
+dotnet_diagnostic.IDE0290.severity = none
+
 # ---- Latest csharp features ----- #
 
 # CA1031: Do not catch general exception types
