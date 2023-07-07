@@ -44,4 +44,5 @@
         "global.json": false,
         "**/lcov.info": true
     },
+    "dotnet.defaultSolution": "solrevdev.seedfolder.sln"
 }
