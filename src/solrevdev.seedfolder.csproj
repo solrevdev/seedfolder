@@ -16,12 +16,17 @@
     <Authors>solrevdev</Authors>
     <Company>solrevdev</Company>
     <RepositoryUrl>https://github.com/solrevdev/seedfolder</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageProjectUrl>https://github.com/solrevdev/seedfolder</PackageProjectUrl>
     <PackageReleaseNotes>https://github.com/solrevdev/seedfolder/releases</PackageReleaseNotes>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
     <PackageTags>dotnetcore;dotnet;csharp;dotnet-global-tool;dotnet-global-tools;</PackageTags>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../README.md" Pack="true" PackagePath="\"/>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.0.2" />
