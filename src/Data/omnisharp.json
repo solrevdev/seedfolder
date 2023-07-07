@@ -1,9 +1,24 @@
 {
     "RoslynExtensionsOptions": {
-        "enableAnalyzersSupport": true,
-        "enableDecompilationSupport": true
+        "EnableAnalyzersSupport": true,
+        "EnableDecompilationSupport": true,
+        "EnableImportCompletion": true
     },
     "FormattingOptions": {
-        "enableEditorConfigSupport": true
+        "EnableEditorConfigSupport": true,
+        "OrganizeImports": true
+    },
+    "RenameOptions": {
+        "RenameInComments": true,
+        "RenameOverloads": true,
+        "RenameInStrings": true
+    },
+    "FileOptions": {
+        "SystemExcludeSearchPatterns": [
+            "**/node_modules/**/*",
+            "**/bin/**/*",
+            "**/obj/**/*"
+        ],
+        "ExcludeSearchPatterns": []
     }
 }
