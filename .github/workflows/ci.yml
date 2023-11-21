@@ -1,4 +1,5 @@
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+# For discussion and modifications on this script, refer to: https://chat.openai.com/c/f97e6bae-f219-4670-b038-16141ba554ae
 
 name: CI
 
@@ -45,22 +46,8 @@ jobs:
               run: dotnet build solrevdev.seedfolder.sln --configuration Release
 
             - name: dotnet pack
-              run: dotnet pack solrevdev.seedfolder.sln -c Release --no-build --include-source --include-symbols
+              run: dotnet pack src/solrevdev.seedfolder.csproj -c Release --no-build --include-source --include-symbols --output ./nupkgs
 
-            - name: setup nuget
+            - name: dotnet nuget push
               if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-              uses: nuget/setup-nuget@v1
-              with:
-                  nuget-version: latest
-
-            - name: Publish NuGet
-              uses: rohith/publish-nuget@v2.1.1
-              with:
-                PROJECT_FILE_PATH: src/solrevdev.seedfolder.csproj # Relative to repository root
-                # VERSION_FILE_PATH: Directory.Build.props # Filepath with version info, relative to repository root. Defaults to project file
-                # VERSION_REGEX: <Version>(.*)<\/Version> # Regex pattern to extract version info in a capturing group
-                # TAG_COMMIT: true # Flag to enable / disable git tagging
-                # TAG_FORMAT: v* # Format of the git tag, [*] gets replaced with version
-                NUGET_KEY: ${{secrets.NUGET_API_KEY}} # nuget.org API key
-                PACKAGE_NAME: solrevdev.seedfolder
-
+              run: dotnet nuget push ./nupkgs/*.nupkg --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
