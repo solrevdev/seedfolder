@@ -72,6 +72,10 @@ It will also copy the following dotfiles from the `src/Data` folder over:
 * .prettierignore
 * .prettierrc
 
+## Requirements
+
+This tool requires .NET 8.0 or .NET 9.0 SDK to be installed on your system.
+
 ## Installation
 
 Locally without publishing it on NuGet

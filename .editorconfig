@@ -85,7 +85,7 @@ csharp_preserve_single_line_blocks = true
 csharp_preserve_single_line_statements = false
 dotnet_separate_import_directive_groups = false
 
-# IDE0005: Remove unnessecary using statements
+# IDE0005: Remove unnecessary using statements
 dotnet_diagnostic.IDE0005.severity = error
 
 # Expression-level preferences
