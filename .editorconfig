@@ -11,7 +11,7 @@ root = true
 insert_final_newline = true
 indent_style = space
 indent_size = 4
-guidelines = 120
+guidelines = 140
 
 
 # C# files
@@ -85,8 +85,8 @@ csharp_preserve_single_line_blocks = true
 csharp_preserve_single_line_statements = false
 dotnet_separate_import_directive_groups = false
 
-# IDE0005: Remove unnessecary using statements
-dotnet_diagnostic.IDE0005.severity = warning
+# IDE0005: Remove unnecessary using statements
+dotnet_diagnostic.IDE0005.severity = error
 
 # Expression-level preferences
 dotnet_style_object_initializer = true:suggestion
@@ -169,10 +169,16 @@ dotnet_naming_style.end_in_async.required_suffix = Async
 dotnet_naming_style.end_in_async.capitalization = pascal_case
 dotnet_naming_style.end_in_async.word_separator =
 
-# ---- Latest csharp features ----- #
+# IDE0290 Use primary constructor
+# https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-12#primary-constructors
+# https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/proposals/primary-constructors
+# will disable this rule for now until I decide if I like it and want to use it.
+# dotnet_diagnostic.IDE0290.severity = none | error | suggestion
 
-# guidelines support
-guidelines = 120
+# IDE0290 Use primary constructor
+dotnet_diagnostic.IDE0290.severity = none
+
+# ---- Latest csharp features ----- #
 
 # CA1031: Do not catch general exception types
 dotnet_diagnostic.CA1031.severity = none

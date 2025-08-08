@@ -21,7 +21,7 @@ For example:
 
 ```bash
 seedfolder
-dotnet run --project src/solrevdev.seedfolder.csproj
+dotnet run --project src/solrevdev.seedfolder.csproj --framework net8.0
 ▲   Do you want to prefix the folder with the date? [Y/n] y
 ▲   What do you want the folder to be named? temp
 ‍▲   Creating the directory 2020-12-10_temp
@@ -35,7 +35,7 @@ dotnet run --project src/solrevdev.seedfolder.csproj
 ▲   Done!
 
 seedfolder
-dotnet run --project src/solrevdev.seedfolder.csproj
+dotnet run --project src/solrevdev.seedfolder.csproj --framework net9.0
 ▲   Do you want to prefix the folder with the date? [Y/n] n
 ▲   What do you want the folder to be named? temp
 ‍▲   Creating the directory temp
@@ -49,7 +49,7 @@ dotnet run --project src/solrevdev.seedfolder.csproj
 ▲   Done!
 
 seedfolder temp
-dotnet run --project src/solrevdev.seedfolder.csproj temp
+dotnet run --project src/solrevdev.seedfolder.csproj --framework net8.0 temp
 ▲   Found 1 params to process.
 ‍▲   Creating the directory temp
 ‍▲   Copying .dockerignore to temp/.dockerignore
@@ -71,6 +71,10 @@ It will also copy the following dotfiles from the `src/Data` folder over:
 * .gitignore
 * .prettierignore
 * .prettierrc
+
+## Requirements
+
+This tool requires .NET 8.0 or .NET 9.0 SDK to be installed on your system.
 
 ## Installation
 

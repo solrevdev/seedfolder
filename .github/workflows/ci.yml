@@ -38,9 +38,11 @@ jobs:
               uses: actions/checkout@v4
 
             - name: setup .net core sdk
-              uses: actions/setup-dotnet@v3
+              uses: actions/setup-dotnet@v4
               with:
-                  dotnet-version:  '8.0.x' # SDK Version to use; x will use the latest version of the 3.1 channel
+                  dotnet-version: |
+                    8.0.x
+                    9.0.x
 
             - name: dotnet build
               run: dotnet build solrevdev.seedfolder.sln --configuration Release
