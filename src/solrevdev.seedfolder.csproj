@@ -52,5 +52,16 @@
     <EmbeddedResource Include="Data/prettierignore" />
     <EmbeddedResource Include="Data/prettierrc" />
     <EmbeddedResource Include="Data/omnisharp.json" />
+    <EmbeddedResource Include="Data/package.json" />
+    <EmbeddedResource Include="Data/index.js" />
+    <EmbeddedResource Include="Data/gitignore-node" />
+    <EmbeddedResource Include="Data/main.py" />
+    <EmbeddedResource Include="Data/gitignore-python" />
+    <EmbeddedResource Include="Data/requirements.txt" />
+    <EmbeddedResource Include="Data/Gemfile" />
+    <EmbeddedResource Include="Data/main.rb" />
+    <EmbeddedResource Include="Data/gitignore-ruby" />
+    <EmbeddedResource Include="Data/README.md" />
+    <EmbeddedResource Include="Data/gitignore-markdown" />
   </ItemGroup>
 </Project>
