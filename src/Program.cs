@@ -3,7 +3,11 @@ using Figgle;
 using System.Text;
 using System.Reflection;
 using System.Globalization;
+
 namespace solrevdev.seedfolder;
+
+// Template metadata structure for future extensibility
+internal record TemplateFile(string ResourceName, string FileName, string Description = "");
 
 internal static class Program
 {
@@ -30,6 +34,13 @@ internal static class Program
             if (firstArg is "--version" or "-v")
             {
                 ShowVersion();
+                return;
+            }
+
+            // Handle list templates (foundation for future template system)
+            if (firstArg is "--list-templates" or "--list")
+            {
+                ShowTemplates();
                 return;
             }
 
@@ -90,35 +101,57 @@ internal static class Program
             return;
         }
 
-        // Copy template files using cross-platform path handling
-        var templateFiles = new[]
-        {
-            ("dockerignore", ".dockerignore"),
-            ("editorconfig", ".editorconfig"),
-            ("gitattributes", ".gitattributes"),
-            ("gitignore", ".gitignore"),
-            ("prettierignore", ".prettierignore"),
-            ("prettierrc", ".prettierrc"),
-            ("omnisharp.json", "omnisharp.json")
-        };
+        // Define default template files (foundation for future template system)
+        var defaultTemplate = GetDefaultTemplate();
 
-        foreach (var (resourceName, fileName) in templateFiles)
+        // Copy template files using cross-platform path handling
+        foreach (var templateFile in defaultTemplate)
         {
-            var destinationPath = Path.Combine(finalFolderName, fileName);
-            WriteLine($"‍▲   Copying {fileName} to {destinationPath}");
+            var destinationPath = Path.Combine(finalFolderName, templateFile.FileName);
+            WriteLine($"‍▲   Copying {templateFile.FileName} to {destinationPath}");
             
             try
             {
-                await WriteFileAsync(resourceName, destinationPath).ConfigureAwait(false);
+                await WriteFileAsync(templateFile.ResourceName, destinationPath).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
-                WriteLine($"▲   Error copying {fileName}: {ex.Message}", ConsoleColor.DarkRed);
+                WriteLine($"▲   Error copying {templateFile.FileName}: {ex.Message}", ConsoleColor.DarkRed);
                 return;
             }
         }
 
         WriteLine("▲   Done!");
+    }
+
+    private static TemplateFile[] GetDefaultTemplate()
+    {
+        return new TemplateFile[]
+        {
+            new("dockerignore", ".dockerignore", "Docker ignore patterns"),
+            new("editorconfig", ".editorconfig", "Editor configuration"),
+            new("gitattributes", ".gitattributes", "Git attributes"),
+            new("gitignore", ".gitignore", "Git ignore patterns"),
+            new("prettierignore", ".prettierignore", "Prettier ignore patterns"),
+            new("prettierrc", ".prettierrc", "Prettier configuration"),
+            new("omnisharp.json", "omnisharp.json", "OmniSharp configuration")
+        };
+    }
+
+    private static void ShowTemplates()
+    {
+        WriteLine("▲   Available template files:");
+        WriteLine("");
+        
+        var templates = GetDefaultTemplate();
+        foreach (var template in templates)
+        {
+            WriteLine($"  • {template.FileName,-20} {template.Description}");
+        }
+        
+        WriteLine("");
+        WriteLine("▲   Note: Template system will be expanded in future versions to support");
+        WriteLine("▲         different project types (node, python, ruby, etc.)");
     }
 
     private static void ShowVersion()
@@ -136,8 +169,9 @@ internal static class Program
         const string help = @"▲   Usage: seedfolder [options] [folderName]
 
 Options:
-  --help, -h, -?     Show this help message
-  --version, -v      Show version information
+  --help, -h, -?        Show this help message
+  --version, -v         Show version information
+  --list-templates      Show available template files
 
 Arguments:
   folderName         Name of the folder to create (optional)
@@ -220,7 +254,16 @@ seedfolder creates a new directory and copies standard dotfiles into it:
 
     private static string SafeNameForFileSystem(string name, char replace = '-')
     {
+        if (string.IsNullOrWhiteSpace(name))
+            return string.Empty;
+            
         var invalids = Path.GetInvalidFileNameChars();
-        return new string(name.Select(c => invalids.Contains(c) ? replace : c).ToArray());
+        var result = new string(name.Select(c => invalids.Contains(c) ? replace : c).ToArray());
+        
+        // Remove any leading/trailing dashes and handle edge cases
+        result = result.Trim(replace);
+        
+        // Ensure we don't end up with an empty string after cleaning
+        return string.IsNullOrWhiteSpace(result) ? string.Empty : result;
     }
 }
