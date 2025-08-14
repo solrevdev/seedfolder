@@ -17,14 +17,23 @@ internal static class Program
 
         if (args?.Length > 0)
         {
-            var opts = new[] { "--help", "-h", "-?", "--version", "-v" };
-            if (opts.Contains(args[0].ToLower(CultureInfo.InvariantCulture)))
+            var firstArg = args[0].ToLower(CultureInfo.InvariantCulture);
+            
+            // Handle help flags
+            if (firstArg is "--help" or "-h" or "-?")
             {
                 ShowHelp();
                 return;
             }
+            
+            // Handle version flags  
+            if (firstArg is "--version" or "-v")
+            {
+                ShowVersion();
+                return;
+            }
 
-            WriteLine($"▲   Found {args?.Length} params to process. ");
+            WriteLine($"▲   Found {args.Length} params to process.");
             folderName = args[0];
         }
 
@@ -41,82 +50,115 @@ internal static class Program
             folderName = Prompt.GetString("▲   What do you want the folder to be named?");
         }
 
+        // Validate and sanitize folder name
         if (string.IsNullOrWhiteSpace(folderName))
         {
-            WriteLine("▲   You must enter a folder name.", ConsoleColor.DarkRed);
+            WriteLine("▲   Error: You must enter a folder name.", ConsoleColor.DarkRed);
             return;
         }
-        else
+
+        folderName = RemoveSpaces(folderName);
+        folderName = SafeNameForFileSystem(folderName);
+        
+        if (string.IsNullOrWhiteSpace(folderName))
         {
-            folderName = RemoveSpaces(folderName);
-            folderName = SafeNameForFileSystem(folderName);
-            sb.Append(folderName);
+            WriteLine("▲   Error: Folder name contains only invalid characters.", ConsoleColor.DarkRed);
+            return;
         }
+        
+        sb.Append(folderName);
 
         var finalFolderName = sb.ToString();
+        
+        // Check if directory already exists
         if (Directory.Exists(finalFolderName))
         {
-            WriteLine($"▲   Sorry but {finalFolderName} already exists.", ConsoleColor.DarkRed);
+            WriteLine($"▲   Error: Directory '{finalFolderName}' already exists.", ConsoleColor.DarkRed);
+            WriteLine("▲   Please choose a different name or remove the existing directory.", ConsoleColor.DarkYellow);
             return;
         }
 
+        // Create directory with error handling
         WriteLine($"‍▲   Creating the directory {finalFolderName}");
-        Directory.CreateDirectory(finalFolderName);
+        try
+        {
+            Directory.CreateDirectory(finalFolderName);
+        }
+        catch (Exception ex)
+        {
+            WriteLine($"▲   Error creating directory: {ex.Message}", ConsoleColor.DarkRed);
+            return;
+        }
 
-        WriteLine($"‍▲   Copying .dockerignore to {finalFolderName}{Path.DirectorySeparatorChar}.dockerignore");
-        await WriteFileAsync("dockerignore", $"{finalFolderName}{Path.DirectorySeparatorChar}.dockerignore").ConfigureAwait(false);
+        // Copy template files using cross-platform path handling
+        var templateFiles = new[]
+        {
+            ("dockerignore", ".dockerignore"),
+            ("editorconfig", ".editorconfig"),
+            ("gitattributes", ".gitattributes"),
+            ("gitignore", ".gitignore"),
+            ("prettierignore", ".prettierignore"),
+            ("prettierrc", ".prettierrc"),
+            ("omnisharp.json", "omnisharp.json")
+        };
 
-        WriteLine($"‍▲   Copying .editorconfig to {finalFolderName}{Path.DirectorySeparatorChar}.editorconfig");
-        await WriteFileAsync("editorconfig", $"{finalFolderName}{Path.DirectorySeparatorChar}.editorconfig").ConfigureAwait(false);
-
-        WriteLine($"‍▲   Copying .gitattributes to {finalFolderName}{Path.DirectorySeparatorChar}.gitattributes");
-        await WriteFileAsync("gitattributes", $"{finalFolderName}{Path.DirectorySeparatorChar}.gitattributes").ConfigureAwait(false);
-
-        WriteLine($"‍▲   Copying .gitignore to {finalFolderName}{Path.DirectorySeparatorChar}.gitignore");
-        await WriteFileAsync("gitignore", $"{finalFolderName}{Path.DirectorySeparatorChar}.gitignore").ConfigureAwait(false);
-
-        WriteLine($"‍▲   Copying .prettierignore to {finalFolderName}{Path.DirectorySeparatorChar}.prettierignore");
-        await WriteFileAsync("prettierignore", $"{finalFolderName}{Path.DirectorySeparatorChar}.prettierignore").ConfigureAwait(false);
-
-        WriteLine($"‍▲   Copying .prettierrc to {finalFolderName}{Path.DirectorySeparatorChar}.prettierrc");
-        await WriteFileAsync("prettierrc", $"{finalFolderName}{Path.DirectorySeparatorChar}.prettierrc").ConfigureAwait(false);
-
-        WriteLine($"‍▲   Copying omnisharp.json to {finalFolderName}{Path.DirectorySeparatorChar}omnisharp.json");
-        await WriteFileAsync("omnisharp.json", $"{finalFolderName}{Path.DirectorySeparatorChar}omnisharp.json").ConfigureAwait(false);
+        foreach (var (resourceName, fileName) in templateFiles)
+        {
+            var destinationPath = Path.Combine(finalFolderName, fileName);
+            WriteLine($"‍▲   Copying {fileName} to {destinationPath}");
+            
+            try
+            {
+                await WriteFileAsync(resourceName, destinationPath).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                WriteLine($"▲   Error copying {fileName}: {ex.Message}", ConsoleColor.DarkRed);
+                return;
+            }
+        }
 
         WriteLine("▲   Done!");
     }
 
+    private static void ShowVersion()
+    {
+        var version = typeof(Program).GetTypeInfo().Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "Unknown";
+        WriteLine($"▲   seedfolder version {version}");
+    }
+
     private static void ShowHelp()
     {
-        var version = typeof(Program).GetTypeInfo().Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
+        var version = typeof(Program).GetTypeInfo().Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "Unknown";
 
-        WriteLine($"▲   Version {version}");
-        const string help = @"▲   Usage: dotnet run [folderName]
+        WriteLine($"▲   seedfolder version {version}");
+        WriteLine("");
+        const string help = @"▲   Usage: seedfolder [options] [folderName]
 
-Passing no folderName will then interactively ask you for the folder name. otherwise it will use the folderName you pass and create a new directory in your current folder.
+Options:
+  --help, -h, -?     Show this help message
+  --version, -v      Show version information
 
-For example:
+Arguments:
+  folderName         Name of the folder to create (optional)
 
-seedfolder
-▲   Do you want to prefix the folder with the date? [Y/n] y
-▲   What do you want the folder to be named? temp
-▲   Creating the directory 2020-12-10_temp
-▲   Done!
+If no folder name is provided, seedfolder will interactively ask for the folder name
+and whether to prefix it with the current date.
 
-seedfolder
-▲   Do you want to prefix the folder with the date? [Y/n] n
-▲   What do you want the folder to be named? temp
-▲   Creating the directory temp
-▲   Done!
+Examples:
 
-seedfolder temp
-▲   Found 1 params to process.
-▲   Creating the directory temp
-▲   Done!
+  seedfolder                    # Interactive mode
+  seedfolder myproject          # Create 'myproject' folder  
+  seedfolder ""my project""       # Create 'my-project' folder (spaces converted to dashes)
 
-seedfolder will also copy various dotfiles to that folder.
-";
+seedfolder creates a new directory and copies standard dotfiles into it:
+  • .dockerignore
+  • .editorconfig  
+  • .gitattributes
+  • .gitignore
+  • .prettierignore
+  • .prettierrc
+  • omnisharp.json";
         WriteLine(help);
     }
 
@@ -137,15 +179,25 @@ seedfolder will also copy various dotfiles to that folder.
     private static async Task WriteFileAsync(string filename, string destination)
     {
         var assembly = Assembly.GetEntryAssembly();
-        var resourceStream = assembly.GetManifestResourceStream($"solrevdev.seedfolder.Data.{filename}");
-        if (resourceStream != null)
+        var resourceName = $"solrevdev.seedfolder.Data.{filename}";
+        var resourceStream = assembly?.GetManifestResourceStream(resourceName);
+        
+        if (resourceStream == null)
         {
-            using (var reader = new StreamReader(resourceStream, Encoding.UTF8))
-            {
-                var fileContents = await reader.ReadToEndAsync().ConfigureAwait(false);
-                File.WriteAllText(destination, fileContents);
-            }
+            throw new InvalidOperationException($"Could not find embedded resource: {resourceName}");
         }
+
+        using var reader = new StreamReader(resourceStream, Encoding.UTF8);
+        var fileContents = await reader.ReadToEndAsync().ConfigureAwait(false);
+        
+        // Ensure destination directory exists
+        var destinationDir = Path.GetDirectoryName(destination);
+        if (!string.IsNullOrEmpty(destinationDir) && !Directory.Exists(destinationDir))
+        {
+            Directory.CreateDirectory(destinationDir);
+        }
+        
+        await File.WriteAllTextAsync(destination, fileContents).ConfigureAwait(false);
     }
 
     private static void ShowHeader()
