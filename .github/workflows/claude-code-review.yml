@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pull-requests: writr
+      pull-requests: write
       issues: write
       id-token: write
     
