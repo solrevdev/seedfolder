@@ -44,6 +44,11 @@
     <Content Remove="Data/editorconfig-markdown" />
     <Content Remove="Data/editorconfig-universal" />
     <Content Remove="Data/gitattributes" />
+    <Content Remove="Data/gitattributes-node" />
+    <Content Remove="Data/gitattributes-python" />
+    <Content Remove="Data/gitattributes-ruby" />
+    <Content Remove="Data/gitattributes-markdown" />
+    <Content Remove="Data/gitattributes-universal" />
     <Content Remove="Data/gitignore" />
     <Content Remove="Data/prettierignore" />
     <Content Remove="Data/prettierrc" />
@@ -60,6 +65,11 @@
     <EmbeddedResource Include="Data/editorconfig-markdown" />
     <EmbeddedResource Include="Data/editorconfig-universal" />
     <EmbeddedResource Include="Data/gitattributes" />
+    <EmbeddedResource Include="Data/gitattributes-node" />
+    <EmbeddedResource Include="Data/gitattributes-python" />
+    <EmbeddedResource Include="Data/gitattributes-ruby" />
+    <EmbeddedResource Include="Data/gitattributes-markdown" />
+    <EmbeddedResource Include="Data/gitattributes-universal" />
     <EmbeddedResource Include="Data/gitignore" />
     <EmbeddedResource Include="Data/prettierignore" />
     <EmbeddedResource Include="Data/prettierrc" />

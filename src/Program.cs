@@ -3,6 +3,7 @@ using Figgle;
 using System.Text;
 using System.Reflection;
 using System.Globalization;
+using System.Runtime.InteropServices;
 
 namespace solrevdev.seedfolder;
 
@@ -319,6 +320,8 @@ internal static class Program
         {
             WriteLine("▲   Done!", ConsoleColor.DarkGreen);
             WriteLine($"▲   Successfully created {fileCount} files in '{finalFolderName}' using {projectType} template.", ConsoleColor.DarkGreen);
+            WriteLine("");
+            ShowGitSetupInstructions(finalFolderName);
         }
         
         return 0;
@@ -376,6 +379,7 @@ internal static class Program
             new("package.json", "package.json", "Node.js package configuration"),
             new("index.js", "index.js", "Main application entry point"),
             new("gitignore-node", ".gitignore", "Node.js specific git ignore patterns"),
+            new("gitattributes-node", ".gitattributes", "Git attributes for Node.js projects"),
             new("editorconfig-node", ".editorconfig", "Editor configuration for Node.js"),
             new("prettierignore", ".prettierignore", "Prettier ignore patterns"),
             new("prettierrc", ".prettierrc", "Prettier configuration")
@@ -389,6 +393,7 @@ internal static class Program
             new("main.py", "main.py", "Main application entry point"),
             new("requirements.txt", "requirements.txt", "Python dependencies"),
             new("gitignore-python", ".gitignore", "Python specific git ignore patterns"),
+            new("gitattributes-python", ".gitattributes", "Git attributes for Python projects"),
             new("editorconfig-python", ".editorconfig", "Editor configuration for Python")
         };
     }
@@ -400,6 +405,7 @@ internal static class Program
             new("Gemfile", "Gemfile", "Ruby dependencies"),
             new("main.rb", "main.rb", "Main application entry point"),
             new("gitignore-ruby", ".gitignore", "Ruby specific git ignore patterns"),
+            new("gitattributes-ruby", ".gitattributes", "Git attributes for Ruby projects"),
             new("editorconfig-ruby", ".editorconfig", "Editor configuration for Ruby")
         };
     }
@@ -410,6 +416,7 @@ internal static class Program
         {
             new("README.md", "README.md", "Project documentation"),
             new("gitignore-markdown", ".gitignore", "Documentation specific git ignore patterns"),
+            new("gitattributes-markdown", ".gitattributes", "Git attributes for documentation projects"),
             new("editorconfig-markdown", ".editorconfig", "Editor configuration for Markdown")
         };
     }
@@ -420,6 +427,7 @@ internal static class Program
         {
             new("README.md", "README.md", "Project documentation"),
             new("gitignore", ".gitignore", "Basic git ignore patterns"),
+            new("gitattributes-universal", ".gitattributes", "Git attributes for universal projects"),
             new("editorconfig-universal", ".editorconfig", "Editor configuration for universal projects")
         };
     }
@@ -597,5 +605,32 @@ Examples:
             // If we can't determine disk space, assume we have enough (better to try and fail gracefully)
             return true;
         }
+    }
+
+    private static void ShowGitSetupInstructions(string folderName)
+    {
+        WriteLine("▲   To initialize git and make your first commit, copy and paste these commands:", ConsoleColor.Cyan);
+        WriteLine("");
+        
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            // Windows commands
+            WriteLine($"cd \"{folderName}\"", ConsoleColor.DarkYellow);
+            WriteLine("git init", ConsoleColor.DarkYellow);
+            WriteLine("git lfs install 2>nul || echo Git LFS not available", ConsoleColor.DarkYellow);
+            WriteLine("git add .", ConsoleColor.DarkYellow);
+            WriteLine("git commit -m \"Initial commit\"", ConsoleColor.DarkYellow);
+        }
+        else
+        {
+            // Unix-like systems (Linux, macOS)
+            WriteLine($"cd \"{folderName}\"", ConsoleColor.DarkYellow);
+            WriteLine("git init", ConsoleColor.DarkYellow);
+            WriteLine("git lfs install 2>/dev/null || echo \"Git LFS not available\"", ConsoleColor.DarkYellow);
+            WriteLine("git add .", ConsoleColor.DarkYellow);
+            WriteLine("git commit -m \"Initial commit\"", ConsoleColor.DarkYellow);
+        }
+        
+        WriteLine("");
     }
 }
