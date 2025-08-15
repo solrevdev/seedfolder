@@ -22,7 +22,11 @@ on:
 jobs:
     build:
         if: github.event_name == 'push' && contains(toJson(github.event.commits), '***NO_CI***') == false && contains(toJson(github.event.commits), '[ci skip]') == false && contains(toJson(github.event.commits), '[skip ci]') == false
-        runs-on: windows-latest
+        strategy:
+            matrix:
+                os: [ubuntu-latest, windows-latest, macos-latest]
+                dotnet: ['8.0.x', '9.0.x']
+        runs-on: ${{ matrix.os }}
         env:
           ACTIONS_ALLOW_UNSECURE_COMMANDS: true
           DOTNET_CLI_TELEMETRY_OPTOUT: 1
@@ -39,23 +43,30 @@ jobs:
             - name: setup .net core sdk
               uses: actions/setup-dotnet@v4
               with:
-                  dotnet-version: |
-                    8.0.x
-                    9.0.x
+                  dotnet-version: ${{ matrix.dotnet }}
 
             - name: dotnet build
               run: dotnet build solrevdev.seedfolder.sln --configuration Release
+
+            - name: run integration tests (linux/mac)
+              if: matrix.os != 'windows-latest'
+              run: ./tests/integration-test.sh
+
+            - name: run integration tests (windows)
+              if: matrix.os == 'windows-latest'
+              run: powershell -File tests/integration-test.ps1
 
             - name: dotnet pack
               run: dotnet pack solrevdev.seedfolder.sln -c Release --no-build --include-source --include-symbols
 
             - name: setup nuget
-              if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+              if: github.event_name == 'push' && github.ref == 'refs/heads/master' && matrix.os == 'ubuntu-latest' && matrix.dotnet == '8.0.x'
               uses: nuget/setup-nuget@v1
               with:
                   nuget-version: latest
 
             - name: Publish NuGet
+              if: github.event_name == 'push' && github.ref == 'refs/heads/master' && matrix.os == 'ubuntu-latest' && matrix.dotnet == '8.0.x'
               uses: rohith/publish-nuget@v2.1.1
               with:
                 PROJECT_FILE_PATH: src/solrevdev.seedfolder.csproj # Relative to repository root
