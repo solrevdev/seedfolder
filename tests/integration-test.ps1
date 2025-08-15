@@ -70,9 +70,34 @@ try {
     dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet -t node "test space project"
     if (!(Test-Path "test-space-project")) { throw "space handling failed" }
 
+    # Test error handling - invalid template type
+    Write-Host "🔹 Testing error handling - invalid template..." -ForegroundColor Cyan
+    $result = dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- -t invalidtype test-error 2>$null
+    if ($LASTEXITCODE -eq 0) { throw "Should have failed with invalid template type" }
+
+    # Test error handling - missing template argument
+    Write-Host "🔹 Testing error handling - missing template argument..." -ForegroundColor Cyan
+    $result = dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --template 2>$null
+    if ($LASTEXITCODE -eq 0) { throw "Should have failed with missing template argument" }
+
+    # Test help command
+    Write-Host "🔹 Testing help command..." -ForegroundColor Cyan
+    dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --help >$null
+    if ($LASTEXITCODE -ne 0) { throw "help command failed" }
+
+    # Test version command
+    Write-Host "🔹 Testing version command..." -ForegroundColor Cyan
+    dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --version >$null
+    if ($LASTEXITCODE -ne 0) { throw "version command failed" }
+
+    # Test list templates command
+    Write-Host "🔹 Testing list templates command..." -ForegroundColor Cyan
+    dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --list-templates >$null
+    if ($LASTEXITCODE -ne 0) { throw "list templates command failed" }
+
     Write-Host "🎉 All integration tests passed!" -ForegroundColor Green
     Write-Host "✅ Tested templates: dotnet, node, python, ruby, markdown, universal" -ForegroundColor Green
-    Write-Host "✅ Tested features: dry-run, force, quiet, space handling" -ForegroundColor Green
+    Write-Host "✅ Tested features: dry-run, force, quiet, space handling, error handling, help, version, list-templates" -ForegroundColor Green
 }
 catch {
     Write-Host "❌ Test failed: $_" -ForegroundColor Red

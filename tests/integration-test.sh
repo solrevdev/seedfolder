@@ -70,10 +70,36 @@ echo "🔹 Testing space handling..."
 dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet -t node "test space project"
 [[ -d "test-space-project" ]] || { echo "❌ space handling failed"; exit 1; }
 
+# Test error handling - invalid template type
+echo "🔹 Testing error handling - invalid template..."
+if dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- -t invalidtype test-error 2>/dev/null; then
+    echo "❌ Should have failed with invalid template type"
+    exit 1
+fi
+
+# Test error handling - missing template argument
+echo "🔹 Testing error handling - missing template argument..."
+if dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --template 2>/dev/null; then
+    echo "❌ Should have failed with missing template argument"
+    exit 1
+fi
+
+# Test help command
+echo "🔹 Testing help command..."
+dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --help > /dev/null || { echo "❌ help command failed"; exit 1; }
+
+# Test version command
+echo "🔹 Testing version command..."
+dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --version > /dev/null || { echo "❌ version command failed"; exit 1; }
+
+# Test list templates command
+echo "🔹 Testing list templates command..."
+dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --list-templates > /dev/null || { echo "❌ list templates command failed"; exit 1; }
+
 # Clean up
 cd ..
 rm -rf "$TEST_DIR"
 
 echo "🎉 All integration tests passed!"
 echo "✅ Tested templates: dotnet, node, python, ruby, markdown, universal"
-echo "✅ Tested features: dry-run, force, quiet, space handling"
+echo "✅ Tested features: dry-run, force, quiet, space handling, error handling, help, version, list-templates"

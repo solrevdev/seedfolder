@@ -22,7 +22,7 @@ internal enum ProjectType
 
 internal static class Program
 {
-    public static async Task Main(string[] args)
+    public static async Task<int> Main(string[] args)
     {
         var folderName = "";
         var projectType = ProjectType.Dotnet; // Default to dotnet
@@ -41,19 +41,19 @@ internal static class Program
                 if (arg is "--help" or "-h" or "-?")
                 {
                     ShowHelp();
-                    return;
+                    return 0;
                 }
                 
                 if (arg is "--version" or "-v")
                 {
                     ShowVersion();
-                    return;
+                    return 0;
                 }
 
                 if (arg is "--list-templates" or "--list")
                 {
                     ShowTemplates();
-                    return;
+                    return 0;
                 }
 
                 if (arg is "--dry-run" or "--dry")
@@ -83,15 +83,22 @@ internal static class Program
                     {
                         WriteLine("▲   Error: --template requires a template type.", ConsoleColor.DarkRed);
                         WriteLine("▲   Available types: dotnet, node, python, ruby, markdown, universal", ConsoleColor.DarkYellow);
-                        return;
+                        return 1;
                     }
 
                     var templateArg = args[argIndex + 1].ToLower(CultureInfo.InvariantCulture);
                     if (!TryParseProjectType(templateArg, out projectType))
                     {
                         WriteLine($"▲   Error: Unknown template type '{args[argIndex + 1]}'.", ConsoleColor.DarkRed);
-                        WriteLine("▲   Available types: dotnet, node, python, ruby, markdown, universal", ConsoleColor.DarkYellow);
-                        return;
+                        WriteLine("▲   Available template types:", ConsoleColor.DarkYellow);
+                        WriteLine("      dotnet    - .NET project with standard dotfiles", ConsoleColor.DarkYellow);
+                        WriteLine("      node      - Node.js project with package.json", ConsoleColor.DarkYellow);
+                        WriteLine("      python    - Python project with requirements.txt", ConsoleColor.DarkYellow);
+                        WriteLine("      ruby      - Ruby project with Gemfile", ConsoleColor.DarkYellow);
+                        WriteLine("      markdown  - Documentation project with README", ConsoleColor.DarkYellow);
+                        WriteLine("      universal - Basic project with minimal files", ConsoleColor.DarkYellow);
+                        WriteLine("▲   Use --list-templates to see all available templates and their files.", ConsoleColor.Cyan);
+                        return 1;
                     }
 
                     argIndex += 2;
@@ -171,7 +178,7 @@ internal static class Program
         if (string.IsNullOrWhiteSpace(folderName))
         {
             WriteLine("▲   Error: You must enter a folder name.", ConsoleColor.DarkRed);
-            return;
+            return 1;
         }
 
         folderName = RemoveSpaces(folderName);
@@ -180,7 +187,7 @@ internal static class Program
         if (string.IsNullOrWhiteSpace(folderName))
         {
             WriteLine("▲   Error: Folder name contains only invalid characters.", ConsoleColor.DarkRed);
-            return;
+            return 1;
         }
         
         sb.Append(folderName);
@@ -194,7 +201,7 @@ internal static class Program
             {
                 WriteLine($"▲   Error: Directory '{finalFolderName}' already exists.", ConsoleColor.DarkRed);
                 WriteLine("▲   Use --force to overwrite existing directory.", ConsoleColor.DarkYellow);
-                return;
+                return 1;
             }
             else if (!isQuiet)
             {
@@ -215,10 +222,10 @@ internal static class Program
                 WriteLine($"    • {destinationPath}", ConsoleColor.Cyan);
             }
             WriteLine("▲   Use without --dry-run to actually create the files.", ConsoleColor.Cyan);
-            return;
+            return 0;
         }
 
-        // Create directory with error handling
+        // Create directory with enhanced error handling
         if (!isQuiet)
             WriteLine($"‍▲   Creating the directory {finalFolderName}");
         
@@ -226,33 +233,95 @@ internal static class Program
         {
             Directory.CreateDirectory(finalFolderName);
         }
+        catch (UnauthorizedAccessException)
+        {
+            WriteLine($"▲   Error: Permission denied creating directory '{finalFolderName}'.", ConsoleColor.DarkRed);
+            WriteLine("▲   Please check that you have write permissions to this location.", ConsoleColor.DarkYellow);
+            return 1;
+        }
+        catch (DirectoryNotFoundException)
+        {
+            WriteLine($"▲   Error: Parent directory path not found for '{finalFolderName}'.", ConsoleColor.DarkRed);
+            WriteLine("▲   Please ensure the parent directory exists.", ConsoleColor.DarkYellow);
+            return 1;
+        }
+        catch (PathTooLongException)
+        {
+            WriteLine($"▲   Error: Directory path is too long: '{finalFolderName}'.", ConsoleColor.DarkRed);
+            WriteLine("▲   Please use a shorter folder name or path.", ConsoleColor.DarkYellow);
+            return 1;
+        }
         catch (Exception ex)
         {
             WriteLine($"▲   Error creating directory: {ex.Message}", ConsoleColor.DarkRed);
-            return;
+            WriteLine("▲   Please check your permissions and try again.", ConsoleColor.DarkYellow);
+            return 1;
         }
 
-        // Copy template files using cross-platform path handling
-        foreach (var templateFile in templateFiles)
+        // Validate disk space before creating files
+        if (!ValidateDiskSpace(finalFolderName))
         {
+            WriteLine("▲   Error: Insufficient disk space to create project files.", ConsoleColor.DarkRed);
+            WriteLine("▲   Please free up disk space and try again.", ConsoleColor.DarkYellow);
+            return 1;
+        }
+
+        // Copy template files using cross-platform path handling with progress indicators
+        var fileCount = templateFiles.Length;
+        for (int i = 0; i < fileCount; i++)
+        {
+            var templateFile = templateFiles[i];
             var destinationPath = Path.Combine(finalFolderName, templateFile.FileName);
             
             if (!isQuiet)
-                WriteLine($"‍▲   Copying {templateFile.FileName} to {destinationPath}");
+            {
+                var progress = $"[{i + 1}/{fileCount}]";
+                WriteLine($"‍▲   {progress} Copying {templateFile.FileName}");
+            }
             
             try
             {
                 await WriteFileAsync(templateFile.ResourceName, destinationPath).ConfigureAwait(false);
+                
+                if (!isQuiet)
+                    WriteLine($"    ✅ Created {destinationPath}", ConsoleColor.DarkGreen);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                WriteLine($"▲   Error: Permission denied writing {templateFile.FileName}.", ConsoleColor.DarkRed);
+                WriteLine($"▲   Please check write permissions for '{destinationPath}'.", ConsoleColor.DarkYellow);
+                WriteLine($"▲   Failed at file {i + 1} of {fileCount}. Some files may have been created.", ConsoleColor.DarkYellow);
+                return 1;
+            }
+            catch (DirectoryNotFoundException)
+            {
+                WriteLine($"▲   Error: Directory not found for {templateFile.FileName}.", ConsoleColor.DarkRed);
+                WriteLine($"▲   The directory may have been deleted during operation.", ConsoleColor.DarkYellow);
+                WriteLine($"▲   Failed at file {i + 1} of {fileCount}. Some files may have been created.", ConsoleColor.DarkYellow);
+                return 1;
+            }
+            catch (IOException ioEx)
+            {
+                WriteLine($"▲   Error: I/O error writing {templateFile.FileName}: {ioEx.Message}", ConsoleColor.DarkRed);
+                WriteLine($"▲   This could be due to disk space, file locks, or permission issues.", ConsoleColor.DarkYellow);
+                WriteLine($"▲   Failed at file {i + 1} of {fileCount}. Some files may have been created.", ConsoleColor.DarkYellow);
+                return 1;
             }
             catch (Exception ex)
             {
                 WriteLine($"▲   Error copying {templateFile.FileName}: {ex.Message}", ConsoleColor.DarkRed);
-                return;
+                WriteLine($"▲   Failed at file {i + 1} of {fileCount}. Some files may have been created.", ConsoleColor.DarkYellow);
+                return 1;
             }
         }
 
         if (!isQuiet)
-            WriteLine("▲   Done!");
+        {
+            WriteLine("▲   Done!", ConsoleColor.DarkGreen);
+            WriteLine($"▲   Successfully created {fileCount} files in '{finalFolderName}' using {projectType} template.", ConsoleColor.DarkGreen);
+        }
+        
+        return 0;
     }
 
     private static bool TryParseProjectType(string input, out ProjectType projectType)
@@ -510,5 +579,23 @@ Examples:
         
         // Ensure we don't end up with an empty string after cleaning
         return string.IsNullOrWhiteSpace(result) ? string.Empty : result;
+    }
+
+    private static bool ValidateDiskSpace(string directoryPath)
+    {
+        try
+        {
+            var drive = new DriveInfo(Path.GetPathRoot(Path.GetFullPath(directoryPath)) ?? Directory.GetCurrentDirectory());
+            
+            // Check if we have at least 10MB of free space (conservative estimate)
+            const long minimumSpaceRequired = 10 * 1024 * 1024; // 10MB in bytes
+            
+            return drive.AvailableFreeSpace >= minimumSpaceRequired;
+        }
+        catch
+        {
+            // If we can't determine disk space, assume we have enough (better to try and fail gracefully)
+            return true;
+        }
     }
 }
