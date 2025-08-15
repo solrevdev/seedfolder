@@ -37,6 +37,12 @@
   <ItemGroup>
     <Content Remove="Data/dockerignore" />
     <Content Remove="Data/editorconfig" />
+    <Content Remove="Data/editorconfig-dotnet" />
+    <Content Remove="Data/editorconfig-node" />
+    <Content Remove="Data/editorconfig-python" />
+    <Content Remove="Data/editorconfig-ruby" />
+    <Content Remove="Data/editorconfig-markdown" />
+    <Content Remove="Data/editorconfig-universal" />
     <Content Remove="Data/gitattributes" />
     <Content Remove="Data/gitignore" />
     <Content Remove="Data/prettierignore" />
@@ -47,6 +53,12 @@
   <ItemGroup>
     <EmbeddedResource Include="Data/dockerignore" />
     <EmbeddedResource Include="Data/editorconfig" />
+    <EmbeddedResource Include="Data/editorconfig-dotnet" />
+    <EmbeddedResource Include="Data/editorconfig-node" />
+    <EmbeddedResource Include="Data/editorconfig-python" />
+    <EmbeddedResource Include="Data/editorconfig-ruby" />
+    <EmbeddedResource Include="Data/editorconfig-markdown" />
+    <EmbeddedResource Include="Data/editorconfig-universal" />
     <EmbeddedResource Include="Data/gitattributes" />
     <EmbeddedResource Include="Data/gitignore" />
     <EmbeddedResource Include="Data/prettierignore" />

@@ -360,7 +360,7 @@ internal static class Program
         return new TemplateFile[]
         {
             new("dockerignore", ".dockerignore", "Docker ignore patterns"),
-            new("editorconfig", ".editorconfig", "Editor configuration"),
+            new("editorconfig-dotnet", ".editorconfig", "Editor configuration for .NET"),
             new("gitattributes", ".gitattributes", "Git attributes"),
             new("gitignore", ".gitignore", "Git ignore patterns"),
             new("prettierignore", ".prettierignore", "Prettier ignore patterns"),
@@ -376,7 +376,7 @@ internal static class Program
             new("package.json", "package.json", "Node.js package configuration"),
             new("index.js", "index.js", "Main application entry point"),
             new("gitignore-node", ".gitignore", "Node.js specific git ignore patterns"),
-            new("editorconfig", ".editorconfig", "Editor configuration"),
+            new("editorconfig-node", ".editorconfig", "Editor configuration for Node.js"),
             new("prettierignore", ".prettierignore", "Prettier ignore patterns"),
             new("prettierrc", ".prettierrc", "Prettier configuration")
         };
@@ -389,7 +389,7 @@ internal static class Program
             new("main.py", "main.py", "Main application entry point"),
             new("requirements.txt", "requirements.txt", "Python dependencies"),
             new("gitignore-python", ".gitignore", "Python specific git ignore patterns"),
-            new("editorconfig", ".editorconfig", "Editor configuration")
+            new("editorconfig-python", ".editorconfig", "Editor configuration for Python")
         };
     }
 
@@ -400,7 +400,7 @@ internal static class Program
             new("Gemfile", "Gemfile", "Ruby dependencies"),
             new("main.rb", "main.rb", "Main application entry point"),
             new("gitignore-ruby", ".gitignore", "Ruby specific git ignore patterns"),
-            new("editorconfig", ".editorconfig", "Editor configuration")
+            new("editorconfig-ruby", ".editorconfig", "Editor configuration for Ruby")
         };
     }
 
@@ -410,7 +410,7 @@ internal static class Program
         {
             new("README.md", "README.md", "Project documentation"),
             new("gitignore-markdown", ".gitignore", "Documentation specific git ignore patterns"),
-            new("editorconfig", ".editorconfig", "Editor configuration")
+            new("editorconfig-markdown", ".editorconfig", "Editor configuration for Markdown")
         };
     }
 
@@ -420,7 +420,7 @@ internal static class Program
         {
             new("README.md", "README.md", "Project documentation"),
             new("gitignore", ".gitignore", "Basic git ignore patterns"),
-            new("editorconfig", ".editorconfig", "Editor configuration")
+            new("editorconfig-universal", ".editorconfig", "Editor configuration for universal projects")
         };
     }
 
