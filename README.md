@@ -44,13 +44,14 @@ seedfolder --dry-run -t node myapp
 Documentation and content projects:
 - `README.md` - Project documentation template
 - `.gitignore` - Documentation specific git ignore patterns
-- `.editorconfig` - Editor configuration
+- `.gitattributes` - Documentation-focused git attributes with LFS for images/videos
+- `.editorconfig` - Documentation optimized editor configuration
 
 ### 🏗️ **dotnet** - .NET Project
 Complete .NET development environment with standard dotfiles:
 - `.dockerignore` - Docker ignore patterns
-- `.editorconfig` - Editor configuration
-- `.gitattributes` - Git attributes  
+- `.editorconfig` - Comprehensive C# editor configuration with .NET naming conventions
+- `.gitattributes` - Comprehensive .NET git attributes with LFS for binaries and C# language detection
 - `.gitignore` - .NET specific git ignore patterns
 - `.prettierignore` - Prettier ignore patterns
 - `.prettierrc` - Prettier configuration
@@ -61,7 +62,8 @@ Modern Node.js project setup:
 - `package.json` - Node.js package configuration
 - `index.js` - Main application entry point
 - `.gitignore` - Node.js specific git ignore patterns
-- `.editorconfig` - Editor configuration
+- `.gitattributes` - JavaScript/TypeScript focused git attributes with web asset handling
+- `.editorconfig` - JavaScript/TypeScript optimized editor configuration
 - `.prettierignore` - Prettier ignore patterns
 - `.prettierrc` - Prettier configuration
 
@@ -70,20 +72,23 @@ Python development environment:
 - `main.py` - Main application entry point
 - `requirements.txt` - Python dependencies
 - `.gitignore` - Python specific git ignore patterns
-- `.editorconfig` - Editor configuration
+- `.gitattributes` - Python-focused git attributes with LFS for wheels, data files, and ML models
+- `.editorconfig` - PEP 8 compliant editor configuration
 
 ### 💎 **ruby** - Ruby Project
 Ruby development setup:
 - `Gemfile` - Ruby dependencies
 - `main.rb` - Main application entry point
 - `.gitignore` - Ruby specific git ignore patterns
-- `.editorconfig` - Editor configuration
+- `.gitattributes` - Ruby-focused git attributes with gem handling and ERB template support
+- `.editorconfig` - Ruby standard editor configuration
 
 ### 🌐 **universal** - Basic Project
 Minimal project setup for any use case:
 - `README.md` - Project documentation template
 - `.gitignore` - Basic git ignore patterns
-- `.editorconfig` - Editor configuration
+- `.gitattributes` - Conservative cross-platform git attributes with basic binary handling
+- `.editorconfig` - Universal editor configuration
 
 ## Command Line Interface
 
