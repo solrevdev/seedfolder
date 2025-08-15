@@ -40,7 +40,13 @@ seedfolder --dry-run -t node myapp
 
 ## Supported Project Templates
 
-### 🏗️ **dotnet** - .NET Project (Default)
+### 📝 **markdown** - Documentation Project (Default)
+Documentation and content projects:
+- `README.md` - Project documentation template
+- `.gitignore` - Documentation specific git ignore patterns
+- `.editorconfig` - Editor configuration
+
+### 🏗️ **dotnet** - .NET Project
 Complete .NET development environment with standard dotfiles:
 - `.dockerignore` - Docker ignore patterns
 - `.editorconfig` - Editor configuration
@@ -73,12 +79,6 @@ Ruby development setup:
 - `.gitignore` - Ruby specific git ignore patterns
 - `.editorconfig` - Editor configuration
 
-### 📝 **markdown** - Documentation Project
-Documentation and content projects:
-- `README.md` - Project documentation template
-- `.gitignore` - Documentation specific git ignore patterns
-- `.editorconfig` - Editor configuration
-
 ### 🌐 **universal** - Basic Project
 Minimal project setup for any use case:
 - `README.md` - Project documentation template
@@ -103,11 +103,11 @@ Arguments:
   folderName              Name of the folder to create (optional)
 
 Template Types:
-  dotnet                  .NET project with standard dotfiles (default)
+  markdown                Documentation project with README (default)
+  dotnet                  .NET project with standard dotfiles
   node                    Node.js project with package.json
   python                  Python project with requirements.txt
   ruby                    Ruby project with Gemfile
-  markdown                Documentation project with README
   universal               Basic project with minimal files
 ```
 
@@ -120,13 +120,13 @@ seedfolder
 
 # Example interactive session:
 ▲   Choose a project template:
-    1. dotnet    - .NET project with standard dotfiles
-    2. node      - Node.js project with package.json
-    3. python    - Python project with requirements.txt
-    4. ruby      - Ruby project with Gemfile
-    5. markdown  - Documentation project with README
+    1. markdown  - Documentation project with README
+    2. dotnet    - .NET project with standard dotfiles
+    3. node      - Node.js project with package.json
+    4. python    - Python project with requirements.txt
+    5. ruby      - Ruby project with Gemfile
     6. universal - Basic project with minimal files
-▲   Select template (1-6): 2
+▲   Select template (1-6): 3
 ▲   Do you want to prefix the folder with the date? [Y/n] y
 ▲   What do you want the folder to be named? my-awesome-app
 ▲   [1/6] Copying package.json
@@ -147,7 +147,7 @@ seedfolder -t markdown my-docs
 seedfolder --template universal basic-project
 
 # Using folder name argument (skips interactive mode)
-seedfolder myproject                    # Creates dotnet project (default)
+seedfolder myproject                    # Creates markdown project (default)
 seedfolder --template python myapp      # Creates Python project
 ```
 

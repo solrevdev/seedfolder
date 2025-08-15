@@ -20,9 +20,15 @@ cd "$TEST_DIR"
 
 echo "✅ Testing all template types..."
 
-# Test dotnet template (default)
+# Test markdown template (default)
+echo "🔹 Testing markdown template (default)..."
+dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet test-default-markdown
+[[ -f "test-default-markdown/README.md" ]] || { echo "❌ default markdown README.md missing"; exit 1; }
+[[ -f "test-default-markdown/.gitignore" ]] || { echo "❌ default markdown .gitignore missing"; exit 1; }
+
+# Test dotnet template
 echo "🔹 Testing dotnet template..."
-dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet test-dotnet
+dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet --template dotnet test-dotnet
 [[ -f "test-dotnet/.gitignore" ]] || { echo "❌ dotnet .gitignore missing"; exit 1; }
 [[ -f "test-dotnet/omnisharp.json" ]] || { echo "❌ dotnet omnisharp.json missing"; exit 1; }
 

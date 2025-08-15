@@ -25,7 +25,7 @@ internal static class Program
     public static async Task<int> Main(string[] args)
     {
         var folderName = "";
-        var projectType = ProjectType.Dotnet; // Default to dotnet
+        var projectType = ProjectType.Markdown; // Default to markdown
         var isDryRun = false;
         var isForce = false;
         var isQuiet = false;
@@ -139,25 +139,25 @@ internal static class Program
                 if (!isQuiet)
                 {
                     WriteLine("▲   Available project templates:");
-                    WriteLine("    1. dotnet    - .NET project with standard dotfiles");
-                    WriteLine("    2. node      - Node.js project with package.json");
-                    WriteLine("    3. python    - Python project with requirements.txt");
-                    WriteLine("    4. ruby      - Ruby project with Gemfile");
-                    WriteLine("    5. markdown  - Documentation project with README");
+                    WriteLine("    1. markdown  - Documentation project with README");
+                    WriteLine("    2. dotnet    - .NET project with standard dotfiles");
+                    WriteLine("    3. node      - Node.js project with package.json");
+                    WriteLine("    4. python    - Python project with requirements.txt");
+                    WriteLine("    5. ruby      - Ruby project with Gemfile");
                     WriteLine("    6. universal - Basic project with minimal files");
                     WriteLine("");
                 }
 
-                var templateChoice = Prompt.GetString("▲   Select template type (1-6) or press Enter for dotnet", "1");
+                var templateChoice = Prompt.GetString("▲   Select template type (1-6) or press Enter for markdown", "1");
                 
                 projectType = templateChoice switch
                 {
-                    "2" or "node" => ProjectType.Node,
-                    "3" or "python" => ProjectType.Python,
-                    "4" or "ruby" => ProjectType.Ruby,
-                    "5" or "markdown" => ProjectType.Markdown,
+                    "2" or "dotnet" => ProjectType.Dotnet,
+                    "3" or "node" => ProjectType.Node,
+                    "4" or "python" => ProjectType.Python,
+                    "5" or "ruby" => ProjectType.Ruby,
                     "6" or "universal" => ProjectType.Universal,
-                    _ => ProjectType.Dotnet
+                    _ => ProjectType.Markdown
                 };
 
                 if (!isQuiet)
@@ -436,11 +436,11 @@ internal static class Program
         
         var templates = new[]
         {
+            ("markdown", "Documentation project with README", GetMarkdownTemplate()),
             ("dotnet", "Dotnet project with standard dotfiles", GetDotnetTemplate()),
             ("node", "Node.js project with package.json", GetNodeTemplate()),
             ("python", "Python project with requirements.txt", GetPythonTemplate()),
             ("ruby", "Ruby project with Gemfile", GetRubyTemplate()),
-            ("markdown", "Documentation project with README", GetMarkdownTemplate()),
             ("universal", "Basic project with minimal files", GetUniversalTemplate())
         };
 
@@ -487,11 +487,11 @@ Arguments:
   folderName              Name of the folder to create (optional)
 
 Template Types:
-  dotnet                  .NET project with standard dotfiles (default)
+  dotnet                  .NET project with standard dotfiles
   node                    Node.js project with package.json
   python                  Python project with requirements.txt
   ruby                    Ruby project with Gemfile
-  markdown                Documentation project with README
+  markdown                Documentation project with README (default)
   universal               Basic project with minimal files
 
 If no folder name is provided, seedfolder will interactively ask for the folder name
@@ -500,7 +500,7 @@ and whether to prefix it with the current date.
 Examples:
 
   seedfolder                              # Interactive mode with template selection
-  seedfolder myproject                    # Create 'myproject' folder with dotnet template
+  seedfolder myproject                    # Create 'myproject' folder with markdown template
   seedfolder --template node myapp        # Create Node.js project
   seedfolder -t python ""my project""       # Create Python project (spaces converted to dashes)
   seedfolder --type ruby mygem            # Create Ruby project
