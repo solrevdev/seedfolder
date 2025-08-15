@@ -124,32 +124,126 @@ Template Types:
 seedfolder
 
 # Example interactive session:
-▲   Choose a project template:
+                    _  __       _     _           
+  ___  ___  ___  __| |/ _| ___ | | __| | ___ _ __ 
+ / __|/ _ \/ _ \/ _` | |_ / _ \| |/ _` |/ _ \ '__|
+ \__ \  __/  __/ (_| |  _| (_) | | (_| |  __/ |   
+ |___/\___|\___|\__,_|_|  \___/|_|\__,_|\___|_|   
+
+▲   Running in the path /current/directory
+▲   Available project templates:
     1. markdown  - Documentation project with README
     2. dotnet    - .NET project with standard dotfiles
     3. node      - Node.js project with package.json
     4. python    - Python project with requirements.txt
     5. ruby      - Ruby project with Gemfile
     6. universal - Basic project with minimal files
-▲   Select template (1-6): 3
+
+▲   Select template type (1-6) or press Enter for markdown: 3
+▲   Selected template: Node
 ▲   Do you want to prefix the folder with the date? [Y/n] y
 ▲   What do you want the folder to be named? my-awesome-app
-▲   [1/6] Copying package.json
+‍▲   Creating the directory 2024-01-15_my-awesome-app
+‍▲   [1/7] Copying package.json
     ✅ Created 2024-01-15_my-awesome-app/package.json
-▲   [2/6] Copying index.js
+‍▲   [2/7] Copying index.js
     ✅ Created 2024-01-15_my-awesome-app/index.js
+‍▲   [3/7] Copying .gitignore
+    ✅ Created 2024-01-15_my-awesome-app/.gitignore
+‍▲   [4/7] Copying .gitattributes
+    ✅ Created 2024-01-15_my-awesome-app/.gitattributes
+‍▲   [5/7] Copying .editorconfig
+    ✅ Created 2024-01-15_my-awesome-app/.editorconfig
+‍▲   [6/7] Copying .prettierignore
+    ✅ Created 2024-01-15_my-awesome-app/.prettierignore
+‍▲   [7/7] Copying .prettierrc
+    ✅ Created 2024-01-15_my-awesome-app/.prettierrc
 ▲   Done!
-▲   Successfully created 6 files in '2024-01-15_my-awesome-app' using Node template.
+▲   Successfully created 7 files in '2024-01-15_my-awesome-app' using Node template.
+
+▲   To initialize git and make your first commit, copy and paste these commands:
+
+cd "2024-01-15_my-awesome-app"
+git init
+git lfs install 2>/dev/null || echo "Git LFS not available"
+git add .
+git commit -m "Initial commit"
 ```
 
 ### Direct Template Selection
 ```bash
 # Create different project types
 seedfolder --template node myapp
-seedfolder -t python "machine learning project"  # Spaces converted to dashes
-seedfolder --type ruby my_gem_name
-seedfolder -t markdown my-docs
-seedfolder --template universal basic-project
+▲   Using template type: Node
+                    _  __       _     _           
+  ___  ___  ___  __| |/ _| ___ | | __| | ___ _ __ 
+ / __|/ _ \/ _ \/ _` | |_ / _ \| |/ _` |/ _ \ '__|
+ \__ \  __/  __/ (_| |  _| (_) | | (_| |  __/ |   
+ |___/\___|\___|\__,_|_|  \___/|_|\__,_|\___|_|   
+
+▲   Running in the path /current/directory
+‍▲   Creating the directory myapp
+‍▲   [1/7] Copying package.json
+    ✅ Created myapp/package.json
+‍▲   [2/7] Copying index.js
+    ✅ Created myapp/index.js
+‍▲   [3/7] Copying .gitignore
+    ✅ Created myapp/.gitignore
+‍▲   [4/7] Copying .gitattributes
+    ✅ Created myapp/.gitattributes
+‍▲   [5/7] Copying .editorconfig
+    ✅ Created myapp/.editorconfig
+‍▲   [6/7] Copying .prettierignore
+    ✅ Created myapp/.prettierignore
+‍▲   [7/7] Copying .prettierrc
+    ✅ Created myapp/.prettierrc
+▲   Done!
+▲   Successfully created 7 files in 'myapp' using Node template.
+
+▲   To initialize git and make your first commit, copy and paste these commands:
+
+cd "myapp"
+git init
+git lfs install 2>/dev/null || echo "Git LFS not available"
+git add .
+git commit -m "Initial commit"
+
+# Create Python project (spaces converted to dashes)
+seedfolder -t python "machine learning project"
+▲   Using template type: Python
+                    _  __       _     _           
+  ___  ___  ___  __| |/ _| ___ | | __| | ___ _ __ 
+ / __|/ _ \/ _ \/ _` | |_ / _ \| |/ _` |/ _ \ '__|
+ \__ \  __/  __/ (_| |  _| (_) | | (_| |  __/ |   
+ |___/\___|\___|\__,_|_|  \___/|_|\__,_|\___|_|   
+
+▲   Running in the path /current/directory
+‍▲   Creating the directory machine-learning-project
+‍▲   [1/5] Copying main.py
+    ✅ Created machine-learning-project/main.py
+‍▲   [2/5] Copying requirements.txt
+    ✅ Created machine-learning-project/requirements.txt
+‍▲   [3/5] Copying .gitignore
+    ✅ Created machine-learning-project/.gitignore
+‍▲   [4/5] Copying .gitattributes
+    ✅ Created machine-learning-project/.gitattributes
+‍▲   [5/5] Copying .editorconfig
+    ✅ Created machine-learning-project/.editorconfig
+▲   Done!
+▲   Successfully created 5 files in 'machine-learning-project' using Python template.
+
+▲   To initialize git and make your first commit, copy and paste these commands:
+
+cd "machine-learning-project"
+git init
+git lfs install 2>/dev/null || echo "Git LFS not available"
+git add .
+git commit -m "Initial commit"
+
+# Other examples
+seedfolder --type ruby my_gem_name      # Creates Ruby project
+seedfolder -t markdown my-docs          # Creates documentation project
+seedfolder --template universal basic-project  # Creates universal project
 
 # Using folder name argument (skips interactive mode)
 seedfolder myproject                    # Creates markdown project (default)
@@ -160,17 +254,49 @@ seedfolder --template python myapp      # Creates Python project
 ```bash
 # Preview what would be created (dry-run mode)
 seedfolder --dry-run -t node myapp
-▲   [DRY RUN] Would create directory: myapp
-▲   [DRY RUN] Would copy package.json → myapp/package.json
-▲   [DRY RUN] Would copy index.js → myapp/index.js
-▲   [DRY RUN] Would copy .gitignore → myapp/.gitignore
-▲   [DRY RUN] 6 files would be created
+▲   Using template type: Node
+                    _  __       _     _           
+  ___  ___  ___  __| |/ _| ___ | | __| | ___ _ __ 
+ / __|/ _ \/ _ \/ _` | |_ / _ \| |/ _` |/ _ \ '__|
+ \__ \  __/  __/ (_| |  _| (_) | | (_| |  __/ |   
+ |___/\___|\___|\__,_|_|  \___/|_|\__,_|\___|_|   
+
+▲   Running in the path /current/directory
+▲   DRY RUN: Would create directory 'myapp' with template 'Node'
+▲   Files that would be created:
+    • myapp/package.json
+    • myapp/index.js
+    • myapp/.gitignore
+    • myapp/.gitattributes
+    • myapp/.editorconfig
+    • myapp/.prettierignore
+    • myapp/.prettierrc
+▲   Use without --dry-run to actually create the files.
 
 # Force overwrite existing directory
 seedfolder --force existing-directory
-seedfolder --force -t python existing-python-project
+▲   Warning: Directory 'existing-directory' exists, will overwrite files.
+‍▲   Creating the directory existing-directory
+‍▲   [1/4] Copying README.md
+    ✅ Created existing-directory/README.md
+‍▲   [2/4] Copying .gitignore
+    ✅ Created existing-directory/.gitignore
+‍▲   [3/4] Copying .gitattributes
+    ✅ Created existing-directory/.gitattributes
+‍▲   [4/4] Copying .editorconfig
+    ✅ Created existing-directory/.editorconfig
+▲   Done!
+▲   Successfully created 4 files in 'existing-directory' using Markdown template.
 
-# Quiet mode for scripting
+▲   To initialize git and make your first commit, copy and paste these commands:
+
+cd "existing-directory"
+git init
+git lfs install 2>/dev/null || echo "Git LFS not available"
+git add .
+git commit -m "Initial commit"
+
+# Quiet mode for scripting (no output shown)
 seedfolder --quiet -t node myapp
 ```
 
@@ -178,12 +304,96 @@ seedfolder --quiet -t node myapp
 ```bash
 # List all available templates with file details
 seedfolder --list-templates
+▲   Available project templates:
+
+  markdown     - Documentation project with README
+    • README.md            Project documentation
+    • .gitignore           Documentation specific git ignore patterns
+    • .gitattributes       Git attributes for documentation projects
+    • .editorconfig        Editor configuration for Markdown
+
+  dotnet       - Dotnet project with standard dotfiles
+    • .dockerignore        Docker ignore patterns
+    • .editorconfig        Editor configuration for .NET
+    • .gitattributes       Git attributes
+    • .gitignore           Git ignore patterns
+    • .prettierignore      Prettier ignore patterns
+    • .prettierrc          Prettier configuration
+    • omnisharp.json       OmniSharp configuration
+
+  node         - Node.js project with package.json
+    • package.json         Node.js package configuration
+    • index.js             Main application entry point
+    • .gitignore           Node.js specific git ignore patterns
+    • .gitattributes       Git attributes for Node.js projects
+    • .editorconfig        Editor configuration for Node.js
+    • .prettierignore      Prettier ignore patterns
+    • .prettierrc          Prettier configuration
+
+  python       - Python project with requirements.txt
+    • main.py              Main application entry point
+    • requirements.txt     Python dependencies
+    • .gitignore           Python specific git ignore patterns
+    • .gitattributes       Git attributes for Python projects
+    • .editorconfig        Editor configuration for Python
+
+  ruby         - Ruby project with Gemfile
+    • Gemfile              Ruby dependencies
+    • main.rb              Main application entry point
+    • .gitignore           Ruby specific git ignore patterns
+    • .gitattributes       Git attributes for Ruby projects
+    • .editorconfig        Editor configuration for Ruby
+
+  universal    - Basic project with minimal files
+    • README.md            Project documentation
+    • .gitignore           Basic git ignore patterns
+    • .gitattributes       Git attributes for universal projects
+    • .editorconfig        Editor configuration for universal projects
+
+▲   Usage examples:
+    seedfolder --template node myproject
+    seedfolder -t python myapp
+    seedfolder --type ruby mygem
 
 # Show version information
 seedfolder --version
+▲   seedfolder version 1.3.1
 
 # Show help
 seedfolder --help
+▲   seedfolder version 1.3.1
+
+▲   Usage: seedfolder [options] [folderName]
+
+Options:
+  --help, -h, -?           Show this help message
+  --version, -v            Show version information
+  --list-templates         Show available template files
+  --template, --type, -t   Specify project template type
+  --dry-run, --dry         Preview operations without creating files
+  --force, -f              Overwrite existing directory and files
+  --quiet, -q              Suppress output (useful for scripting)
+
+Arguments:
+  folderName              Name of the folder to create (optional)
+
+Template Types:
+  dotnet                  .NET project with standard dotfiles
+  node                    Node.js project with package.json
+  python                  Python project with requirements.txt
+  ruby                    Ruby project with Gemfile
+  markdown                Documentation project with README (default)
+  universal               Basic project with minimal files
+
+Examples:
+  seedfolder                              # Interactive mode with template selection
+  seedfolder myproject                    # Create 'myproject' folder with markdown template
+  seedfolder --template node myapp        # Create Node.js project
+  seedfolder -t python "my project"       # Create Python project (spaces converted to dashes)
+  seedfolder --type ruby mygem            # Create Ruby project
+  seedfolder --dry-run -t node myapp      # Preview Node.js project creation
+  seedfolder --force myproject            # Overwrite existing 'myproject' directory
+  seedfolder --quiet -t python myapp      # Create Python project with no output
 ```
 
 ## Advanced Features
@@ -197,12 +407,26 @@ seedfolder --help
 ### 📊 **Progress Indicators**
 Real-time progress tracking with visual feedback:
 ```bash
-▲   [1/6] Copying package.json
-    ✅ Created test-project/package.json
-▲   [2/6] Copying index.js
-    ✅ Created test-project/index.js
+‍▲   [1/5] Copying main.py
+    ✅ Created test-python/main.py
+‍▲   [2/5] Copying requirements.txt
+    ✅ Created test-python/requirements.txt
+‍▲   [3/5] Copying .gitignore
+    ✅ Created test-python/.gitignore
+‍▲   [4/5] Copying .gitattributes
+    ✅ Created test-python/.gitattributes
+‍▲   [5/5] Copying .editorconfig
+    ✅ Created test-python/.editorconfig
 ▲   Done!
-▲   Successfully created 6 files in 'test-project' using Node template.
+▲   Successfully created 5 files in 'test-python' using Python template.
+
+▲   To initialize git and make your first commit, copy and paste these commands:
+
+cd "test-python"
+git init
+git lfs install 2>/dev/null || echo "Git LFS not available"
+git add .
+git commit -m "Initial commit"
 ```
 
 ### 🔄 **Smart Input Handling**
