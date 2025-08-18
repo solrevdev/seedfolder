@@ -14,11 +14,11 @@
 
 **SeedFolder** is a powerful .NET Global Tool that creates project directories and seeds them with curated template files for different project types. Whether you're starting a .NET project, Node.js app, Python script, Ruby gem, or documentation project, SeedFolder provides the right foundation with just one command.
 
-🚀 **Multi-Template System** - Support for 6 different project types  
-⚡ **Professional CLI** - Comprehensive command-line interface with dry-run, force mode, and more  
-🌐 **Cross-Platform** - Works on Windows, macOS, and Linux  
-🔄 **Interactive Mode** - Guided project creation with template selection  
-📊 **Progress Tracking** - Real-time feedback with visual progress indicators  
+🚀 **Multi-Template System** - Support for 6 different project types
+⚡ **Professional CLI** - Comprehensive command-line interface with dry-run, force mode, and more
+🌐 **Cross-Platform** - Works on Windows, macOS, and Linux
+🔄 **Interactive Mode** - Guided project creation with template selection
+📊 **Progress Tracking** - Real-time feedback with visual progress indicators
 
 ## Quick Start
 
@@ -57,7 +57,7 @@ Complete .NET development environment with standard dotfiles:
 - `.prettierrc` - Prettier configuration
 - `omnisharp.json` - OmniSharp configuration
 
-### 📦 **node** - Node.js Project  
+### 📦 **node** - Node.js Project
 Modern Node.js project setup:
 - `package.json` - Node.js package configuration
 - `index.js` - Main application entry point
@@ -124,11 +124,11 @@ Template Types:
 seedfolder
 
 # Example interactive session:
-                    _  __       _     _           
-  ___  ___  ___  __| |/ _| ___ | | __| | ___ _ __ 
+                    _  __       _     _
+  ___  ___  ___  __| |/ _| ___ | | __| | ___ _ __
  / __|/ _ \/ _ \/ _` | |_ / _ \| |/ _` |/ _ \ '__|
- \__ \  __/  __/ (_| |  _| (_) | | (_| |  __/ |   
- |___/\___|\___|\__,_|_|  \___/|_|\__,_|\___|_|   
+ \__ \  __/  __/ (_| |  _| (_) | | (_| |  __/ |
+ |___/\___|\___|\__,_|_|  \___/|_|\__,_|\___|_|
 
 ▲   Running in the path /current/directory
 ▲   Available project templates:
@@ -175,11 +175,11 @@ git commit -m "Initial commit"
 # Create different project types
 seedfolder --template node myapp
 ▲   Using template type: Node
-                    _  __       _     _           
-  ___  ___  ___  __| |/ _| ___ | | __| | ___ _ __ 
+                    _  __       _     _
+  ___  ___  ___  __| |/ _| ___ | | __| | ___ _ __
  / __|/ _ \/ _ \/ _` | |_ / _ \| |/ _` |/ _ \ '__|
- \__ \  __/  __/ (_| |  _| (_) | | (_| |  __/ |   
- |___/\___|\___|\__,_|_|  \___/|_|\__,_|\___|_|   
+ \__ \  __/  __/ (_| |  _| (_) | | (_| |  __/ |
+ |___/\___|\___|\__,_|_|  \___/|_|\__,_|\___|_|
 
 ▲   Running in the path /current/directory
 ‍▲   Creating the directory myapp
@@ -211,11 +211,11 @@ git commit -m "Initial commit"
 # Create Python project (spaces converted to dashes)
 seedfolder -t python "machine learning project"
 ▲   Using template type: Python
-                    _  __       _     _           
-  ___  ___  ___  __| |/ _| ___ | | __| | ___ _ __ 
+                    _  __       _     _
+  ___  ___  ___  __| |/ _| ___ | | __| | ___ _ __
  / __|/ _ \/ _ \/ _` | |_ / _ \| |/ _` |/ _ \ '__|
- \__ \  __/  __/ (_| |  _| (_) | | (_| |  __/ |   
- |___/\___|\___|\__,_|_|  \___/|_|\__,_|\___|_|   
+ \__ \  __/  __/ (_| |  _| (_) | | (_| |  __/ |
+ |___/\___|\___|\__,_|_|  \___/|_|\__,_|\___|_|
 
 ▲   Running in the path /current/directory
 ‍▲   Creating the directory machine-learning-project
@@ -255,11 +255,11 @@ seedfolder --template python myapp      # Creates Python project
 # Preview what would be created (dry-run mode)
 seedfolder --dry-run -t node myapp
 ▲   Using template type: Node
-                    _  __       _     _           
-  ___  ___  ___  __| |/ _| ___ | | __| | ___ _ __ 
+                    _  __       _     _
+  ___  ___  ___  __| |/ _| ___ | | __| | ___ _ __
  / __|/ _ \/ _ \/ _` | |_ / _ \| |/ _` |/ _ \ '__|
- \__ \  __/  __/ (_| |  _| (_) | | (_| |  __/ |   
- |___/\___|\___|\__,_|_|  \___/|_|\__,_|\___|_|   
+ \__ \  __/  __/ (_| |  _| (_) | | (_| |  __/ |
+ |___/\___|\___|\__,_|_|  \___/|_|\__,_|\___|_|
 
 ▲   Running in the path /current/directory
 ▲   DRY RUN: Would create directory 'myapp' with template 'Node'
@@ -470,12 +470,23 @@ dotnet tool uninstall --global solrevdev.seedfolder
 
 ### Local Testing
 ```bash
-# Run directly during development
-dotnet run --project src/solrevdev.seedfolder.csproj
+## Run directly during development
 
-# With arguments
-dotnet run --project src/solrevdev.seedfolder.csproj -- --template node myapp
-dotnet run --project src/solrevdev.seedfolder.csproj -- --help
+# Interactive mode
+dotnet run --project src/solrevdev.seedfolder.csproj --framework net9.0
+
+## With arguments
+
+# Show the application's version (pass `--version` to the app via `--`)
+dotnet run --project src/solrevdev.seedfolder.csproj --framework net9.0 -- --version
+
+# Show the application's help text (pass `--help` to the app via `--`)
+dotnet run --project src/solrevdev.seedfolder.csproj --framework net9.0 -- --help
+
+# Create a Node template project using the app (arguments after `--` are for the app)
+dotnet run --project src/solrevdev.seedfolder.csproj --framework net9.0 -- --template node myapp
+
+# If you omit `--` and run `dotnet run --project ... --help`, the .NET CLI help will be shown.
 ```
 
 ### Building and Testing
