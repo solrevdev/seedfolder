@@ -3,34 +3,168 @@ using Figgle;
 using System.Text;
 using System.Reflection;
 using System.Globalization;
+using System.Runtime.InteropServices;
+
 namespace solrevdev.seedfolder;
+
+// Template metadata structure for future extensibility
+internal record TemplateFile(string ResourceName, string FileName, string Description = "");
+
+// Enum for supported project types
+internal enum ProjectType
+{
+    Dotnet,
+    Node,
+    Python,
+    Ruby,
+    Markdown,
+    Universal
+}
 
 internal static class Program
 {
-    public static async Task Main(string[] args)
+    public static async Task<int> Main(string[] args)
     {
-        ShowHeader();
-
-        WriteLine($"▲   Running in the path {Directory.GetCurrentDirectory()}");
-
         var folderName = "";
+        var projectType = ProjectType.Markdown; // Default to markdown
+        var isDryRun = false;
+        var isForce = false;
+        var isQuiet = false;
 
         if (args?.Length > 0)
         {
-            var opts = new[] { "--help", "-h", "-?", "--version", "-v" };
-            if (opts.Contains(args[0].ToLower(CultureInfo.InvariantCulture)))
+            var argIndex = 0;
+            while (argIndex < args.Length)
             {
-                ShowHelp();
-                return;
-            }
+                var arg = args[argIndex].ToLower(CultureInfo.InvariantCulture);
+                
+                // Handle flags
+                if (arg is "--help" or "-h" or "-?")
+                {
+                    ShowHelp();
+                    return 0;
+                }
+                
+                if (arg is "--version" or "-v")
+                {
+                    ShowVersion();
+                    return 0;
+                }
 
-            WriteLine($"▲   Found {args?.Length} params to process. ");
-            folderName = args[0];
+                if (arg is "--list-templates" or "--list")
+                {
+                    ShowTemplates();
+                    return 0;
+                }
+
+                if (arg is "--dry-run" or "--dry")
+                {
+                    isDryRun = true;
+                    argIndex++;
+                    continue;
+                }
+
+                if (arg is "--force" or "-f")
+                {
+                    isForce = true;
+                    argIndex++;
+                    continue;
+                }
+
+                if (arg is "--quiet" or "-q")
+                {
+                    isQuiet = true;
+                    argIndex++;
+                    continue;
+                }
+
+                if (arg is "--template" or "--type" or "-t")
+                {
+                    if (argIndex + 1 >= args.Length)
+                    {
+                        WriteLine("▲   Error: --template requires a template type.", ConsoleColor.DarkRed);
+                        WriteLine("▲   Available types: dotnet, node, python, ruby, markdown, universal", ConsoleColor.DarkYellow);
+                        return 1;
+                    }
+
+                    var templateArg = args[argIndex + 1].ToLower(CultureInfo.InvariantCulture);
+                    if (!TryParseProjectType(templateArg, out projectType))
+                    {
+                        WriteLine($"▲   Error: Unknown template type '{args[argIndex + 1]}'.", ConsoleColor.DarkRed);
+                        WriteLine("▲   Available template types:", ConsoleColor.DarkYellow);
+                        WriteLine("      dotnet    - .NET project with standard dotfiles", ConsoleColor.DarkYellow);
+                        WriteLine("      node      - Node.js project with package.json", ConsoleColor.DarkYellow);
+                        WriteLine("      python    - Python project with requirements.txt", ConsoleColor.DarkYellow);
+                        WriteLine("      ruby      - Ruby project with Gemfile", ConsoleColor.DarkYellow);
+                        WriteLine("      markdown  - Documentation project with README", ConsoleColor.DarkYellow);
+                        WriteLine("      universal - Basic project with minimal files", ConsoleColor.DarkYellow);
+                        WriteLine("▲   Use --list-templates to see all available templates and their files.", ConsoleColor.Cyan);
+                        return 1;
+                    }
+
+                    argIndex += 2;
+                    
+                    // Get folder name if provided
+                    if (argIndex < args.Length)
+                    {
+                        folderName = args[argIndex];
+                        argIndex++;
+                    }
+
+                    if (!isQuiet)
+                        WriteLine($"▲   Using template type: {projectType}");
+                    break;
+                }
+                else
+                {
+                    // This is the folder name
+                    folderName = args[argIndex];
+                    argIndex++;
+                    break;
+                }
+            }
+        }
+
+        if (!isQuiet)
+        {
+            ShowHeader();
+            WriteLine($"▲   Running in the path {Directory.GetCurrentDirectory()}");
         }
 
         var sb = new StringBuilder();
         if (string.IsNullOrWhiteSpace(folderName))
         {
+            // Interactive template selection
+            if (projectType == ProjectType.Dotnet) // Only prompt if no template was specified
+            {
+                if (!isQuiet)
+                {
+                    WriteLine("▲   Available project templates:");
+                    WriteLine("    1. markdown  - Documentation project with README");
+                    WriteLine("    2. dotnet    - .NET project with standard dotfiles");
+                    WriteLine("    3. node      - Node.js project with package.json");
+                    WriteLine("    4. python    - Python project with requirements.txt");
+                    WriteLine("    5. ruby      - Ruby project with Gemfile");
+                    WriteLine("    6. universal - Basic project with minimal files");
+                    WriteLine("");
+                }
+
+                var templateChoice = Prompt.GetString("▲   Select template type (1-6) or press Enter for markdown", "1");
+                
+                projectType = templateChoice switch
+                {
+                    "2" or "dotnet" => ProjectType.Dotnet,
+                    "3" or "node" => ProjectType.Node,
+                    "4" or "python" => ProjectType.Python,
+                    "5" or "ruby" => ProjectType.Ruby,
+                    "6" or "universal" => ProjectType.Universal,
+                    _ => ProjectType.Markdown
+                };
+
+                if (!isQuiet)
+                    WriteLine($"▲   Selected template: {projectType}");
+            }
+
             var prefixWithDate = Prompt.GetYesNo("▲   Do you want to prefix the folder with the date?", defaultAnswer: true);
             if (prefixWithDate)
             {
@@ -41,82 +175,346 @@ internal static class Program
             folderName = Prompt.GetString("▲   What do you want the folder to be named?");
         }
 
+        // Validate and sanitize folder name
         if (string.IsNullOrWhiteSpace(folderName))
         {
-            WriteLine("▲   You must enter a folder name.", ConsoleColor.DarkRed);
-            return;
+            WriteLine("▲   Error: You must enter a folder name.", ConsoleColor.DarkRed);
+            return 1;
         }
-        else
+
+        folderName = RemoveSpaces(folderName);
+        folderName = SafeNameForFileSystem(folderName);
+        
+        if (string.IsNullOrWhiteSpace(folderName))
         {
-            folderName = RemoveSpaces(folderName);
-            folderName = SafeNameForFileSystem(folderName);
-            sb.Append(folderName);
+            WriteLine("▲   Error: Folder name contains only invalid characters.", ConsoleColor.DarkRed);
+            return 1;
         }
+        
+        sb.Append(folderName);
 
         var finalFolderName = sb.ToString();
+        
+        // Check if directory already exists
         if (Directory.Exists(finalFolderName))
         {
-            WriteLine($"▲   Sorry but {finalFolderName} already exists.", ConsoleColor.DarkRed);
-            return;
+            if (!isForce)
+            {
+                WriteLine($"▲   Error: Directory '{finalFolderName}' already exists.", ConsoleColor.DarkRed);
+                WriteLine("▲   Use --force to overwrite existing directory.", ConsoleColor.DarkYellow);
+                return 1;
+            }
+            else if (!isQuiet)
+            {
+                WriteLine($"▲   Warning: Directory '{finalFolderName}' exists, will overwrite files.", ConsoleColor.DarkYellow);
+            }
         }
 
-        WriteLine($"‍▲   Creating the directory {finalFolderName}");
-        Directory.CreateDirectory(finalFolderName);
+        // Define template files based on project type
+        var templateFiles = GetTemplateFiles(projectType);
 
-        WriteLine($"‍▲   Copying .dockerignore to {finalFolderName}{Path.DirectorySeparatorChar}.dockerignore");
-        await WriteFileAsync("dockerignore", $"{finalFolderName}{Path.DirectorySeparatorChar}.dockerignore").ConfigureAwait(false);
+        if (isDryRun)
+        {
+            WriteLine($"▲   DRY RUN: Would create directory '{finalFolderName}' with template '{projectType}'", ConsoleColor.Cyan);
+            WriteLine("▲   Files that would be created:", ConsoleColor.Cyan);
+            foreach (var templateFile in templateFiles)
+            {
+                var destinationPath = Path.Combine(finalFolderName, templateFile.FileName);
+                WriteLine($"    • {destinationPath}", ConsoleColor.Cyan);
+            }
+            WriteLine("▲   Use without --dry-run to actually create the files.", ConsoleColor.Cyan);
+            return 0;
+        }
 
-        WriteLine($"‍▲   Copying .editorconfig to {finalFolderName}{Path.DirectorySeparatorChar}.editorconfig");
-        await WriteFileAsync("editorconfig", $"{finalFolderName}{Path.DirectorySeparatorChar}.editorconfig").ConfigureAwait(false);
+        // Create directory with enhanced error handling
+        if (!isQuiet)
+            WriteLine($"‍▲   Creating the directory {finalFolderName}");
+        
+        try
+        {
+            Directory.CreateDirectory(finalFolderName);
+        }
+        catch (UnauthorizedAccessException)
+        {
+            WriteLine($"▲   Error: Permission denied creating directory '{finalFolderName}'.", ConsoleColor.DarkRed);
+            WriteLine("▲   Please check that you have write permissions to this location.", ConsoleColor.DarkYellow);
+            return 1;
+        }
+        catch (DirectoryNotFoundException)
+        {
+            WriteLine($"▲   Error: Parent directory path not found for '{finalFolderName}'.", ConsoleColor.DarkRed);
+            WriteLine("▲   Please ensure the parent directory exists.", ConsoleColor.DarkYellow);
+            return 1;
+        }
+        catch (PathTooLongException)
+        {
+            WriteLine($"▲   Error: Directory path is too long: '{finalFolderName}'.", ConsoleColor.DarkRed);
+            WriteLine("▲   Please use a shorter folder name or path.", ConsoleColor.DarkYellow);
+            return 1;
+        }
+        catch (Exception ex)
+        {
+            WriteLine($"▲   Error creating directory: {ex.Message}", ConsoleColor.DarkRed);
+            WriteLine("▲   Please check your permissions and try again.", ConsoleColor.DarkYellow);
+            return 1;
+        }
 
-        WriteLine($"‍▲   Copying .gitattributes to {finalFolderName}{Path.DirectorySeparatorChar}.gitattributes");
-        await WriteFileAsync("gitattributes", $"{finalFolderName}{Path.DirectorySeparatorChar}.gitattributes").ConfigureAwait(false);
+        // Validate disk space before creating files
+        if (!ValidateDiskSpace(finalFolderName))
+        {
+            WriteLine("▲   Error: Insufficient disk space to create project files.", ConsoleColor.DarkRed);
+            WriteLine("▲   Please free up disk space and try again.", ConsoleColor.DarkYellow);
+            return 1;
+        }
 
-        WriteLine($"‍▲   Copying .gitignore to {finalFolderName}{Path.DirectorySeparatorChar}.gitignore");
-        await WriteFileAsync("gitignore", $"{finalFolderName}{Path.DirectorySeparatorChar}.gitignore").ConfigureAwait(false);
+        // Copy template files using cross-platform path handling with progress indicators
+        var fileCount = templateFiles.Length;
+        for (int i = 0; i < fileCount; i++)
+        {
+            var templateFile = templateFiles[i];
+            var destinationPath = Path.Combine(finalFolderName, templateFile.FileName);
+            
+            if (!isQuiet)
+            {
+                var progress = $"[{i + 1}/{fileCount}]";
+                WriteLine($"‍▲   {progress} Copying {templateFile.FileName}");
+            }
+            
+            try
+            {
+                await WriteFileAsync(templateFile.ResourceName, destinationPath).ConfigureAwait(false);
+                
+                if (!isQuiet)
+                    WriteLine($"    ✅ Created {destinationPath}", ConsoleColor.DarkGreen);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                WriteLine($"▲   Error: Permission denied writing {templateFile.FileName}.", ConsoleColor.DarkRed);
+                WriteLine($"▲   Please check write permissions for '{destinationPath}'.", ConsoleColor.DarkYellow);
+                WriteLine($"▲   Failed at file {i + 1} of {fileCount}. Some files may have been created.", ConsoleColor.DarkYellow);
+                return 1;
+            }
+            catch (DirectoryNotFoundException)
+            {
+                WriteLine($"▲   Error: Directory not found for {templateFile.FileName}.", ConsoleColor.DarkRed);
+                WriteLine($"▲   The directory may have been deleted during operation.", ConsoleColor.DarkYellow);
+                WriteLine($"▲   Failed at file {i + 1} of {fileCount}. Some files may have been created.", ConsoleColor.DarkYellow);
+                return 1;
+            }
+            catch (IOException ioEx)
+            {
+                WriteLine($"▲   Error: I/O error writing {templateFile.FileName}: {ioEx.Message}", ConsoleColor.DarkRed);
+                WriteLine($"▲   This could be due to disk space, file locks, or permission issues.", ConsoleColor.DarkYellow);
+                WriteLine($"▲   Failed at file {i + 1} of {fileCount}. Some files may have been created.", ConsoleColor.DarkYellow);
+                return 1;
+            }
+            catch (Exception ex)
+            {
+                WriteLine($"▲   Error copying {templateFile.FileName}: {ex.Message}", ConsoleColor.DarkRed);
+                WriteLine($"▲   Failed at file {i + 1} of {fileCount}. Some files may have been created.", ConsoleColor.DarkYellow);
+                return 1;
+            }
+        }
 
-        WriteLine($"‍▲   Copying .prettierignore to {finalFolderName}{Path.DirectorySeparatorChar}.prettierignore");
-        await WriteFileAsync("prettierignore", $"{finalFolderName}{Path.DirectorySeparatorChar}.prettierignore").ConfigureAwait(false);
+        if (!isQuiet)
+        {
+            WriteLine("▲   Done!", ConsoleColor.DarkGreen);
+            WriteLine($"▲   Successfully created {fileCount} files in '{finalFolderName}' using {projectType} template.", ConsoleColor.DarkGreen);
+            WriteLine("");
+            ShowGitSetupInstructions(finalFolderName);
+        }
+        
+        return 0;
+    }
 
-        WriteLine($"‍▲   Copying .prettierrc to {finalFolderName}{Path.DirectorySeparatorChar}.prettierrc");
-        await WriteFileAsync("prettierrc", $"{finalFolderName}{Path.DirectorySeparatorChar}.prettierrc").ConfigureAwait(false);
+    private static bool TryParseProjectType(string input, out ProjectType projectType)
+    {
+        projectType = input switch
+        {
+            "dotnet" or "net" or "csharp" => ProjectType.Dotnet,
+            "node" or "nodejs" or "javascript" or "js" => ProjectType.Node,
+            "python" or "py" => ProjectType.Python,
+            "ruby" or "rb" => ProjectType.Ruby,
+            "markdown" or "md" or "docs" => ProjectType.Markdown,
+            "universal" or "basic" or "minimal" => ProjectType.Universal,
+            _ => ProjectType.Dotnet
+        };
+        
+        return input is "dotnet" or "net" or "csharp" or "node" or "nodejs" or "javascript" or "js" 
+            or "python" or "py" or "ruby" or "rb" or "markdown" or "md" or "docs" 
+            or "universal" or "basic" or "minimal";
+    }
 
-        WriteLine($"‍▲   Copying omnisharp.json to {finalFolderName}{Path.DirectorySeparatorChar}omnisharp.json");
-        await WriteFileAsync("omnisharp.json", $"{finalFolderName}{Path.DirectorySeparatorChar}omnisharp.json").ConfigureAwait(false);
+    private static TemplateFile[] GetTemplateFiles(ProjectType projectType)
+    {
+        return projectType switch
+        {
+            ProjectType.Node => GetNodeTemplate(),
+            ProjectType.Python => GetPythonTemplate(),
+            ProjectType.Ruby => GetRubyTemplate(),
+            ProjectType.Markdown => GetMarkdownTemplate(),
+            ProjectType.Universal => GetUniversalTemplate(),
+            _ => GetDotnetTemplate()
+        };
+    }
 
-        WriteLine("▲   Done!");
+    private static TemplateFile[] GetDotnetTemplate()
+    {
+        return new TemplateFile[]
+        {
+            new("dockerignore", ".dockerignore", "Docker ignore patterns"),
+            new("editorconfig-dotnet", ".editorconfig", "Editor configuration for .NET"),
+            new("gitattributes", ".gitattributes", "Git attributes"),
+            new("gitignore", ".gitignore", "Git ignore patterns"),
+            new("prettierignore", ".prettierignore", "Prettier ignore patterns"),
+            new("prettierrc", ".prettierrc", "Prettier configuration"),
+            new("omnisharp.json", "omnisharp.json", "OmniSharp configuration")
+        };
+    }
+
+    private static TemplateFile[] GetNodeTemplate()
+    {
+        return new TemplateFile[]
+        {
+            new("package.json", "package.json", "Node.js package configuration"),
+            new("index.js", "index.js", "Main application entry point"),
+            new("gitignore-node", ".gitignore", "Node.js specific git ignore patterns"),
+            new("gitattributes-node", ".gitattributes", "Git attributes for Node.js projects"),
+            new("editorconfig-node", ".editorconfig", "Editor configuration for Node.js"),
+            new("prettierignore", ".prettierignore", "Prettier ignore patterns"),
+            new("prettierrc", ".prettierrc", "Prettier configuration")
+        };
+    }
+
+    private static TemplateFile[] GetPythonTemplate()
+    {
+        return new TemplateFile[]
+        {
+            new("main.py", "main.py", "Main application entry point"),
+            new("requirements.txt", "requirements.txt", "Python dependencies"),
+            new("gitignore-python", ".gitignore", "Python specific git ignore patterns"),
+            new("gitattributes-python", ".gitattributes", "Git attributes for Python projects"),
+            new("editorconfig-python", ".editorconfig", "Editor configuration for Python")
+        };
+    }
+
+    private static TemplateFile[] GetRubyTemplate()
+    {
+        return new TemplateFile[]
+        {
+            new("Gemfile", "Gemfile", "Ruby dependencies"),
+            new("main.rb", "main.rb", "Main application entry point"),
+            new("gitignore-ruby", ".gitignore", "Ruby specific git ignore patterns"),
+            new("gitattributes-ruby", ".gitattributes", "Git attributes for Ruby projects"),
+            new("editorconfig-ruby", ".editorconfig", "Editor configuration for Ruby")
+        };
+    }
+
+    private static TemplateFile[] GetMarkdownTemplate()
+    {
+        return new TemplateFile[]
+        {
+            new("README.md", "README.md", "Project documentation"),
+            new("gitignore-markdown", ".gitignore", "Documentation specific git ignore patterns"),
+            new("gitattributes-markdown", ".gitattributes", "Git attributes for documentation projects"),
+            new("editorconfig-markdown", ".editorconfig", "Editor configuration for Markdown")
+        };
+    }
+
+    private static TemplateFile[] GetUniversalTemplate()
+    {
+        return new TemplateFile[]
+        {
+            new("README.md", "README.md", "Project documentation"),
+            new("gitignore", ".gitignore", "Basic git ignore patterns"),
+            new("gitattributes-universal", ".gitattributes", "Git attributes for universal projects"),
+            new("editorconfig-universal", ".editorconfig", "Editor configuration for universal projects")
+        };
+    }
+
+    private static TemplateFile[] GetDefaultTemplate()
+    {
+        return GetDotnetTemplate();
+    }
+
+    private static void ShowTemplates()
+    {
+        WriteLine("▲   Available project templates:");
+        WriteLine("");
+        
+        var templates = new[]
+        {
+            ("markdown", "Documentation project with README", GetMarkdownTemplate()),
+            ("dotnet", "Dotnet project with standard dotfiles", GetDotnetTemplate()),
+            ("node", "Node.js project with package.json", GetNodeTemplate()),
+            ("python", "Python project with requirements.txt", GetPythonTemplate()),
+            ("ruby", "Ruby project with Gemfile", GetRubyTemplate()),
+            ("universal", "Basic project with minimal files", GetUniversalTemplate())
+        };
+
+        foreach (var (name, description, files) in templates)
+        {
+            WriteLine($"  {name,-12} - {description}");
+            foreach (var file in files)
+            {
+                WriteLine($"    • {file.FileName,-20} {file.Description}");
+            }
+            WriteLine("");
+        }
+        
+        WriteLine("▲   Usage examples:");
+        WriteLine("    seedfolder --template node myproject");
+        WriteLine("    seedfolder -t python myapp");
+        WriteLine("    seedfolder --type ruby mygem");
+    }
+
+    private static void ShowVersion()
+    {
+        var version = typeof(Program).GetTypeInfo().Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "Unknown";
+        WriteLine($"▲   seedfolder version {version}");
     }
 
     private static void ShowHelp()
     {
-        var version = typeof(Program).GetTypeInfo().Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
+        var version = typeof(Program).GetTypeInfo().Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "Unknown";
 
-        WriteLine($"▲   Version {version}");
-        const string help = @"▲   Usage: dotnet run [folderName]
+        WriteLine($"▲   seedfolder version {version}");
+        WriteLine("");
+        const string help = @"▲   Usage: seedfolder [options] [folderName]
 
-Passing no folderName will then interactively ask you for the folder name. otherwise it will use the folderName you pass and create a new directory in your current folder.
+Options:
+  --help, -h, -?           Show this help message
+  --version, -v            Show version information
+  --list-templates         Show available template files
+  --template, --type, -t   Specify project template type
+  --dry-run, --dry         Preview operations without creating files
+  --force, -f              Overwrite existing directory and files
+  --quiet, -q              Suppress output (useful for scripting)
 
-For example:
+Arguments:
+  folderName              Name of the folder to create (optional)
 
-seedfolder
-▲   Do you want to prefix the folder with the date? [Y/n] y
-▲   What do you want the folder to be named? temp
-▲   Creating the directory 2020-12-10_temp
-▲   Done!
+Template Types:
+  dotnet                  .NET project with standard dotfiles
+  node                    Node.js project with package.json
+  python                  Python project with requirements.txt
+  ruby                    Ruby project with Gemfile
+  markdown                Documentation project with README (default)
+  universal               Basic project with minimal files
 
-seedfolder
-▲   Do you want to prefix the folder with the date? [Y/n] n
-▲   What do you want the folder to be named? temp
-▲   Creating the directory temp
-▲   Done!
+If no folder name is provided, seedfolder will interactively ask for the folder name
+and whether to prefix it with the current date.
 
-seedfolder temp
-▲   Found 1 params to process.
-▲   Creating the directory temp
-▲   Done!
+Examples:
 
-seedfolder will also copy various dotfiles to that folder.
-";
+  seedfolder                              # Interactive mode with template selection
+  seedfolder myproject                    # Create 'myproject' folder with markdown template
+  seedfolder --template node myapp        # Create Node.js project
+  seedfolder -t python ""my project""       # Create Python project (spaces converted to dashes)
+  seedfolder --type ruby mygem            # Create Ruby project
+  seedfolder --dry-run -t node myapp      # Preview Node.js project creation
+  seedfolder --force myproject            # Overwrite existing 'myproject' directory
+  seedfolder --quiet -t python myapp      # Create Python project with no output";
         WriteLine(help);
     }
 
@@ -137,15 +535,25 @@ seedfolder will also copy various dotfiles to that folder.
     private static async Task WriteFileAsync(string filename, string destination)
     {
         var assembly = Assembly.GetEntryAssembly();
-        var resourceStream = assembly.GetManifestResourceStream($"solrevdev.seedfolder.Data.{filename}");
-        if (resourceStream != null)
+        var resourceName = $"solrevdev.seedfolder.Data.{filename}";
+        var resourceStream = assembly?.GetManifestResourceStream(resourceName);
+        
+        if (resourceStream == null)
         {
-            using (var reader = new StreamReader(resourceStream, Encoding.UTF8))
-            {
-                var fileContents = await reader.ReadToEndAsync().ConfigureAwait(false);
-                File.WriteAllText(destination, fileContents);
-            }
+            throw new InvalidOperationException($"Could not find embedded resource: {resourceName}");
         }
+
+        using var reader = new StreamReader(resourceStream, Encoding.UTF8);
+        var fileContents = await reader.ReadToEndAsync().ConfigureAwait(false);
+        
+        // Ensure destination directory exists
+        var destinationDir = Path.GetDirectoryName(destination);
+        if (!string.IsNullOrEmpty(destinationDir) && !Directory.Exists(destinationDir))
+        {
+            Directory.CreateDirectory(destinationDir);
+        }
+        
+        await File.WriteAllTextAsync(destination, fileContents).ConfigureAwait(false);
     }
 
     private static void ShowHeader()
@@ -168,7 +576,61 @@ seedfolder will also copy various dotfiles to that folder.
 
     private static string SafeNameForFileSystem(string name, char replace = '-')
     {
+        if (string.IsNullOrWhiteSpace(name))
+            return string.Empty;
+            
         var invalids = Path.GetInvalidFileNameChars();
-        return new string(name.Select(c => invalids.Contains(c) ? replace : c).ToArray());
+        var result = new string(name.Select(c => invalids.Contains(c) ? replace : c).ToArray());
+        
+        // Remove any leading/trailing dashes and handle edge cases
+        result = result.Trim(replace);
+        
+        // Ensure we don't end up with an empty string after cleaning
+        return string.IsNullOrWhiteSpace(result) ? string.Empty : result;
+    }
+
+    private static bool ValidateDiskSpace(string directoryPath)
+    {
+        try
+        {
+            var drive = new DriveInfo(Path.GetPathRoot(Path.GetFullPath(directoryPath)) ?? Directory.GetCurrentDirectory());
+            
+            // Check if we have at least 10MB of free space (conservative estimate)
+            const long minimumSpaceRequired = 10 * 1024 * 1024; // 10MB in bytes
+            
+            return drive.AvailableFreeSpace >= minimumSpaceRequired;
+        }
+        catch
+        {
+            // If we can't determine disk space, assume we have enough (better to try and fail gracefully)
+            return true;
+        }
+    }
+
+    private static void ShowGitSetupInstructions(string folderName)
+    {
+        WriteLine("▲   To initialize git and make your first commit, copy and paste these commands:", ConsoleColor.Cyan);
+        WriteLine("");
+        
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            // Windows commands
+            WriteLine($"cd \"{folderName}\"", ConsoleColor.DarkYellow);
+            WriteLine("git init", ConsoleColor.DarkYellow);
+            WriteLine("git lfs install 2>nul || echo Git LFS not available", ConsoleColor.DarkYellow);
+            WriteLine("git add .", ConsoleColor.DarkYellow);
+            WriteLine("git commit -m \"Initial commit\"", ConsoleColor.DarkYellow);
+        }
+        else
+        {
+            // Unix-like systems (Linux, macOS)
+            WriteLine($"cd \"{folderName}\"", ConsoleColor.DarkYellow);
+            WriteLine("git init", ConsoleColor.DarkYellow);
+            WriteLine("git lfs install 2>/dev/null || echo \"Git LFS not available\"", ConsoleColor.DarkYellow);
+            WriteLine("git add .", ConsoleColor.DarkYellow);
+            WriteLine("git commit -m \"Initial commit\"", ConsoleColor.DarkYellow);
+        }
+        
+        WriteLine("");
     }
 }
