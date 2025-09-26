@@ -27,6 +27,7 @@ internal static class Program
     {
         var folderName = "";
         var projectType = ProjectType.Markdown; // Default to markdown
+        var templateExplicitlySpecified = false;
         var isDryRun = false;
         var isForce = false;
         var isQuiet = false;
@@ -80,6 +81,8 @@ internal static class Program
 
                 if (arg is "--template" or "--type" or "-t")
                 {
+                    templateExplicitlySpecified = true;
+
                     if (argIndex + 1 >= args.Length)
                     {
                         WriteLine("▲   Error: --template requires a template type.", ConsoleColor.DarkRed);
@@ -134,8 +137,8 @@ internal static class Program
         var sb = new StringBuilder();
         if (string.IsNullOrWhiteSpace(folderName))
         {
-            // Interactive template selection
-            if (projectType == ProjectType.Dotnet) // Only prompt if no template was specified
+            // Interactive template selection - only prompt if no template was explicitly specified
+            if (!templateExplicitlySpecified)
             {
                 if (!isQuiet)
                 {
@@ -619,7 +622,7 @@ Examples:
             WriteLine("git init", ConsoleColor.DarkYellow);
             WriteLine("git lfs install 2>nul || echo Git LFS not available", ConsoleColor.DarkYellow);
             WriteLine("git add .", ConsoleColor.DarkYellow);
-            WriteLine("git commit -m \"Initial commit\"", ConsoleColor.DarkYellow);
+            WriteLine("git commit -m \"feat: initial commit\"", ConsoleColor.DarkYellow);
         }
         else
         {
@@ -628,7 +631,7 @@ Examples:
             WriteLine("git init", ConsoleColor.DarkYellow);
             WriteLine("git lfs install 2>/dev/null || echo \"Git LFS not available\"", ConsoleColor.DarkYellow);
             WriteLine("git add .", ConsoleColor.DarkYellow);
-            WriteLine("git commit -m \"Initial commit\"", ConsoleColor.DarkYellow);
+            WriteLine("git commit -m \"feat: initial commit\"", ConsoleColor.DarkYellow);
         }
         
         WriteLine("");
