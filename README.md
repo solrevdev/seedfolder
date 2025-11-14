@@ -436,7 +436,7 @@ git commit -m "Initial commit"
 
 ## Requirements
 
-This tool requires **.NET 8.0 or .NET 9.0 SDK** to be installed on your system.
+This tool requires **.NET 8.0, .NET 9.0, or .NET 10.0 SDK** to be installed on your system.
 
 - **Supported Platforms**: Windows, macOS, Linux
 - **Runtime**: .NET 8.0 or later
@@ -473,18 +473,18 @@ dotnet tool uninstall --global solrevdev.seedfolder
 ## Run directly during development
 
 # Interactive mode
-dotnet run --project src/solrevdev.seedfolder.csproj --framework net9.0
+dotnet run --project src/solrevdev.seedfolder.csproj --framework net10.0
 
 ## With arguments
 
 # Show the application's version (pass `--version` to the app via `--`)
-dotnet run --project src/solrevdev.seedfolder.csproj --framework net9.0 -- --version
+dotnet run --project src/solrevdev.seedfolder.csproj --framework net10.0 -- --version
 
 # Show the application's help text (pass `--help` to the app via `--`)
-dotnet run --project src/solrevdev.seedfolder.csproj --framework net9.0 -- --help
+dotnet run --project src/solrevdev.seedfolder.csproj --framework net10.0 -- --help
 
 # Create a Node template project using the app (arguments after `--` are for the app)
-dotnet run --project src/solrevdev.seedfolder.csproj --framework net9.0 -- --template node myapp
+dotnet run --project src/solrevdev.seedfolder.csproj --framework net10.0 -- --template node myapp
 
 # If you omit `--` and run `dotnet run --project ... --help`, the .NET CLI help will be shown.
 ```
