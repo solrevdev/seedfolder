@@ -56,7 +56,7 @@ Template files are stored as embedded resources in `src/Data/` and copied to new
 - `SafeNameForFileSystem()` - Removes invalid filesystem characters from folder names
 
 ## Multi-Target Framework Support
-The project targets .NET 8.0 (LTS) and 9.0 (STS) to support current and modern .NET versions. .NET 8 provides long-term support until November 2026, while .NET 9 offers the latest features with 18-month support.
+The project targets .NET 8.0 (LTS), 9.0 (STS), and 10.0 (LTS) to support current and modern .NET versions. .NET 8 provides long-term support until November 2026, .NET 9 offers the latest features with 18-month support, and .NET 10 is the latest LTS release providing long-term support until November 2028.
 
 ## CI/CD
 GitHub Actions workflow builds, packs, and publishes to NuGet on pushes to master branch. Version is controlled by the `<Version>` property in the .csproj file.
