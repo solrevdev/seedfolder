@@ -109,9 +109,6 @@ internal static class Program
                     }
 
                     argIndex += 2;
-
-                    if (!isQuiet)
-                        WriteLine($"▲   Using template type: {projectType}");
                     continue;
                 }
 
@@ -138,6 +135,9 @@ internal static class Program
 
         if (!isQuiet)
         {
+            if (templateExplicitlySpecified)
+                WriteLine($"▲   Using template type: {projectType}");
+
             ShowHeader();
             WriteLine($"▲   Running in the path {Directory.GetCurrentDirectory()}");
         }
