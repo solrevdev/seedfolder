@@ -70,6 +70,20 @@ try {
     dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet -t node "test space project"
     if (!(Test-Path "test-space-project")) { throw "space handling failed" }
 
+    # Test flags after the folder name
+    Write-Host "🔹 Testing flags after folder name (dry-run)..." -ForegroundColor Cyan
+    dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- test-flags-after --dry-run --quiet -t node
+    if (Test-Path "test-flags-after") { throw "flags-after-folder-name dry-run should not create directory" }
+
+    Write-Host "🔹 Testing flags interleaved around folder name..." -ForegroundColor Cyan
+    dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet --force -t python test-flags-interleaved --dry-run
+    if (Test-Path "test-flags-interleaved") { throw "interleaved dry-run should not create directory" }
+
+    # Test error handling - unknown flag
+    Write-Host "🔹 Testing error handling - unknown flag..." -ForegroundColor Cyan
+    $result = dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --bogus test-error 2>$null
+    if ($LASTEXITCODE -eq 0) { throw "Should have failed with unknown flag" }
+
     # Test error handling - invalid template type
     Write-Host "🔹 Testing error handling - invalid template..." -ForegroundColor Cyan
     $result = dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- -t invalidtype test-error 2>$null
@@ -97,7 +111,7 @@ try {
 
     Write-Host "🎉 All integration tests passed!" -ForegroundColor Green
     Write-Host "✅ Tested templates: dotnet, node, python, ruby, markdown, universal" -ForegroundColor Green
-    Write-Host "✅ Tested features: dry-run, force, quiet, space handling, error handling, help, version, list-templates" -ForegroundColor Green
+    Write-Host "✅ Tested features: dry-run, force, quiet, space handling, flags after folder name, error handling, help, version, list-templates" -ForegroundColor Green
 }
 catch {
     Write-Host "❌ Test failed: $_" -ForegroundColor Red
