@@ -7,7 +7,7 @@ This is a .NET Global Tool that creates project directories and seeds them with 
 
 ### Single-File Console Application
 - All logic exists in `src/Program.cs` - no complex project structure
-- Uses `McMaster.Extensions.CommandLineUtils` for CLI interactions, `Figgle` for ASCII headers, `Colorful.Console` for output formatting
+- Uses `McMaster.Extensions.CommandLineUtils` for CLI interactions, `Figgle`/`Figgle.Fonts` for ASCII headers, `Console.ForegroundColor` for output formatting
 - Command-line parsing is handled manually in `Main()` - check for help flags before processing folder names
 
 ### Embedded Resources Pattern

@@ -37,8 +37,8 @@ dotnet run --project src/solrevdev.seedfolder.csproj myfolder
 ### Single File Structure
 The entire application is contained in `src/Program.cs` - a single-file console application using:
 - **McMaster.Extensions.CommandLineUtils** for command-line parsing and prompts
-- **Figgle** for ASCII art header generation
-- **Colorful.Console** for colored console output
+- **Figgle** / **Figgle.Fonts** for ASCII art header generation
+- **Console.ForegroundColor** for colored console output
 
 ### Embedded Resources
 Template files are stored as embedded resources in `src/Data/` and copied to new folders:
