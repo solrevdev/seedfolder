@@ -3,7 +3,11 @@
 name: CI
 
 permissions:
-    contents: write
+    contents: read
+
+concurrency:
+    group: ci-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || github.ref }}
+    cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 on:
     push:
@@ -26,6 +30,8 @@ jobs:
     build:
         if: github.event_name == 'pull_request' || (github.event_name == 'push' && contains(toJson(github.event.commits), '***NO_CI***') == false && contains(toJson(github.event.commits), '[ci skip]') == false && contains(toJson(github.event.commits), '[skip ci]') == false)
         runs-on: ubuntu-latest
+        outputs:
+            publication_succeeded: ${{ steps.publish.outputs.succeeded }}
         env:
           DOTNET_CLI_TELEMETRY_OPTOUT: 1
           DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
@@ -37,6 +43,8 @@ jobs:
         steps:
             - name: checkout code
               uses: actions/checkout@v5
+              with:
+                  persist-credentials: false
 
             - name: setup .net core sdk
               uses: actions/setup-dotnet@v5
@@ -55,28 +63,87 @@ jobs:
             - name: dotnet pack
               run: dotnet pack solrevdev.seedfolder.sln -c Release --no-build --include-source --include-symbols
 
-            - name: Publish NuGet
-              if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-              env:
-                NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+            - name: verify versioned package
+              id: package
+              shell: bash
               run: |
                 version=$(sed -n 's:.*<Version>\(.*\)</Version>.*:\1:p' src/solrevdev.seedfolder.csproj)
                 package="src/nupkg/solrevdev.seedfolder.${version}.nupkg"
-                tag="v${version}"
 
-                if [[ -z "$version" || ! -f "$package" ]]; then
-                  echo "Unable to find the package version or package file." >&2
+                if [[ -z "$version" ]]; then
+                  echo "Unable to find the package version." >&2
                   exit 1
                 fi
 
-                dotnet nuget push "$package" \
+                if [[ ! -f "$package" ]]; then
+                  echo "Expected package does not exist: ${package}" >&2
+                  exit 1
+                fi
+
+                echo "version=${version}" >> "$GITHUB_OUTPUT"
+                echo "package=${package}" >> "$GITHUB_OUTPUT"
+
+            - name: publish NuGet
+              id: publish
+              if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+              env:
+                NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+                PACKAGE: ${{ steps.package.outputs.package }}
+              run: |
+                dotnet nuget push "$PACKAGE" \
                   --api-key "$NUGET_API_KEY" \
                   --source https://api.nuget.org/v3/index.json \
                   --skip-duplicate
 
-                if git ls-remote --exit-code --tags origin "refs/tags/${tag}" >/dev/null 2>&1; then
-                  echo "Tag ${tag} already exists; no tag update needed."
-                else
-                  git tag "$tag"
-                  git push origin "$tag"
+                echo "succeeded=true" >> "$GITHUB_OUTPUT"
+
+    tag-release:
+        needs: build
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master' && needs.build.result == 'success' && needs.build.outputs.publication_succeeded == 'true'
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+        steps:
+            - name: checkout published commit
+              uses: actions/checkout@v5
+              with:
+                  ref: ${{ github.sha }}
+
+            - name: verify or create release tag
+              shell: bash
+              run: |
+                expected_commit="$GITHUB_SHA"
+                version=$(sed -n 's:.*<Version>\(.*\)</Version>.*:\1:p' src/solrevdev.seedfolder.csproj)
+                tag="v${version}"
+
+                if [[ -z "$version" ]]; then
+                  echo "Unable to find the package version." >&2
+                  exit 1
                 fi
+
+                if [[ "$(git rev-parse HEAD)" != "$expected_commit" ]]; then
+                  echo "Checked-out commit does not match the intended release commit." >&2
+                  exit 1
+                fi
+
+                if git ls-remote --exit-code --refs origin "refs/tags/${tag}" >/dev/null 2>&1; then
+                  git fetch --no-tags origin "refs/tags/${tag}:refs/tags/${tag}"
+                  tag_commit=$(git rev-list -n 1 "refs/tags/${tag}")
+                  tag_version=$(git show "refs/tags/${tag}:src/solrevdev.seedfolder.csproj" | sed -n 's:.*<Version>\(.*\)</Version>.*:\1:p')
+
+                  if [[ "$tag_commit" != "$expected_commit" ]]; then
+                    echo "Tag ${tag} resolves to ${tag_commit}, expected ${expected_commit}." >&2
+                    exit 1
+                  fi
+
+                  if [[ "$tag_version" != "$version" ]]; then
+                    echo "Tag ${tag} contains version ${tag_version}, expected ${version}." >&2
+                    exit 1
+                  fi
+
+                  echo "Tag ${tag} already identifies the published commit and version; safe retry."
+                  exit 0
+                fi
+
+                git tag "$tag" "$expected_commit"
+                git push origin "refs/tags/${tag}:refs/tags/${tag}"
