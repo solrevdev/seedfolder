@@ -76,6 +76,22 @@ echo "🔹 Testing space handling..."
 dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet -t node "test space project"
 [[ -d "test-space-project" ]] || { echo "❌ space handling failed"; exit 1; }
 
+# Test flags after the folder name
+echo "🔹 Testing flags after folder name (dry-run)..."
+dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- test-flags-after --dry-run --quiet -t node
+[[ ! -d "test-flags-after" ]] || { echo "❌ flags-after-folder-name dry-run should not create directory"; exit 1; }
+
+echo "🔹 Testing flags interleaved around folder name..."
+dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet --force -t python test-flags-interleaved --dry-run
+[[ ! -d "test-flags-interleaved" ]] || { echo "❌ interleaved dry-run should not create directory"; exit 1; }
+
+# Test error handling - unknown flag
+echo "🔹 Testing error handling - unknown flag..."
+if dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --bogus test-error 2>/dev/null; then
+    echo "❌ Should have failed with unknown flag"
+    exit 1
+fi
+
 # Test error handling - invalid template type
 echo "🔹 Testing error handling - invalid template..."
 if dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- -t invalidtype test-error 2>/dev/null; then
@@ -108,4 +124,4 @@ rm -rf "$TEST_DIR"
 
 echo "🎉 All integration tests passed!"
 echo "✅ Tested templates: dotnet, node, python, ruby, markdown, universal"
-echo "✅ Tested features: dry-run, force, quiet, space handling, error handling, help, version, list-templates"
+echo "✅ Tested features: dry-run, force, quiet, space handling, flags after folder name, error handling, help, version, list-templates"

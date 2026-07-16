@@ -21,10 +21,9 @@ on:
             - '**/*.gitattributes'
 jobs:
     build:
-        if: github.event_name == 'push' && contains(toJson(github.event.commits), '***NO_CI***') == false && contains(toJson(github.event.commits), '[ci skip]') == false && contains(toJson(github.event.commits), '[skip ci]') == false
+        if: github.event_name == 'pull_request' || (github.event_name == 'push' && contains(toJson(github.event.commits), '***NO_CI***') == false && contains(toJson(github.event.commits), '[ci skip]') == false && contains(toJson(github.event.commits), '[skip ci]') == false)
         runs-on: ubuntu-latest
         env:
-          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
           DOTNET_CLI_TELEMETRY_OPTOUT: 1
           DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
           DOTNET_NOLOGO: true
@@ -53,15 +52,9 @@ jobs:
             - name: dotnet pack
               run: dotnet pack solrevdev.seedfolder.sln -c Release --no-build --include-source --include-symbols
 
-            - name: setup nuget
-              if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-              uses: nuget/setup-nuget@v1
-              with:
-                  nuget-version: latest
-
             - name: Publish NuGet
               if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-              uses: rohith/publish-nuget@v2.1.1
+              uses: alirezanet/publish-nuget@v3.1.0
               with:
                 PROJECT_FILE_PATH: src/solrevdev.seedfolder.csproj # Relative to repository root
                 # VERSION_FILE_PATH: Directory.Build.props # Filepath with version info, relative to repository root. Defaults to project file

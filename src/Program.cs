@@ -1,5 +1,5 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
-using Figgle;
+using Figgle.Fonts;
 using System.Text;
 using System.Reflection;
 using System.Globalization;
@@ -35,17 +35,20 @@ internal static class Program
         if (args?.Length > 0)
         {
             var argIndex = 0;
+            var haveFolderName = false;
+
             while (argIndex < args.Length)
             {
-                var arg = args[argIndex].ToLower(CultureInfo.InvariantCulture);
-                
+                var rawArg = args[argIndex];
+                var arg = rawArg.ToLower(CultureInfo.InvariantCulture);
+
                 // Handle flags
                 if (arg is "--help" or "-h" or "-?")
                 {
                     ShowHelp();
                     return 0;
                 }
-                
+
                 if (arg is "--version" or "-v")
                 {
                     ShowVersion();
@@ -106,30 +109,35 @@ internal static class Program
                     }
 
                     argIndex += 2;
-                    
-                    // Get folder name if provided
-                    if (argIndex < args.Length)
-                    {
-                        folderName = args[argIndex];
-                        argIndex++;
-                    }
+                    continue;
+                }
 
-                    if (!isQuiet)
-                        WriteLine($"▲   Using template type: {projectType}");
-                    break;
-                }
-                else
+                if (arg.StartsWith('-'))
                 {
-                    // This is the folder name
-                    folderName = args[argIndex];
-                    argIndex++;
-                    break;
+                    WriteLine($"▲   Error: Unknown option '{rawArg}'.", ConsoleColor.DarkRed);
+                    WriteLine("▲   Use --help to see available options.", ConsoleColor.DarkYellow);
+                    return 1;
                 }
+
+                // This is a positional argument (the folder name)
+                if (haveFolderName)
+                {
+                    WriteLine($"▲   Error: Unexpected extra argument '{rawArg}'.", ConsoleColor.DarkRed);
+                    WriteLine("▲   Only one folder name may be specified.", ConsoleColor.DarkYellow);
+                    return 1;
+                }
+
+                folderName = rawArg;
+                haveFolderName = true;
+                argIndex++;
             }
         }
 
         if (!isQuiet)
         {
+            if (templateExplicitlySpecified)
+                WriteLine($"▲   Using template type: {projectType}");
+
             ShowHeader();
             WriteLine($"▲   Running in the path {Directory.GetCurrentDirectory()}");
         }
@@ -433,11 +441,6 @@ internal static class Program
             new("gitattributes-universal", ".gitattributes", "Git attributes for universal projects"),
             new("editorconfig-universal", ".editorconfig", "Editor configuration for universal projects")
         };
-    }
-
-    private static TemplateFile[] GetDefaultTemplate()
-    {
-        return GetDotnetTemplate();
     }
 
     private static void ShowTemplates()
