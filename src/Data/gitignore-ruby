@@ -1,4 +1,71 @@
-# Ruby specific ignores
+# ---------------------------------------------------------------
+# Common ignores: operating system, editors, archives, secrets
+# ---------------------------------------------------------------
+
+# macOS
+.DS_Store
+._*
+.AppleDouble
+.LSOverride
+.Spotlight-V100
+.Trashes
+.fseventsd
+Icon?
+
+# Windows
+Thumbs.db
+ehthumbs.db
+desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Linux
+*~
+.directory
+.fuse_hidden*
+.nfs*
+
+# Editors and IDEs
+.vs/
+.idea/
+*.swp
+*.swo
+*.sublime-workspace
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Logs and temp files
+*.log
+*.tmp
+
+# Release archives
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.7z
+*.rar
+
+# Environment files and secrets
+.env
+.env.*
+!.env.example
+!.env.sample
+*.pem
+*.pfx
+*.p12
+*.key
+id_rsa
+id_ed25519
+
+# ---------------------------------------------------------------
+# Ruby
+# ---------------------------------------------------------------
+
+# Gems and build output
 *.gem
 *.rbc
 /.config
@@ -10,9 +77,6 @@
 /test/tmp/
 /test/version_tmp/
 /tmp/
-
-# Used by dotenv library to load environment variables.
-.env
 
 # Ignore Byebug command history file.
 .byebug_history
@@ -33,7 +97,3 @@
 # Ignore uploaded files in development
 /storage/*
 !/storage/.keep
-
-# IDE
-.vscode/
-.idea/

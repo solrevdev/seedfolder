@@ -19,11 +19,23 @@ Set-Location $TestDir
 
 Write-Host "✅ Testing all template types..." -ForegroundColor Green
 
+# Patterns every template's .gitignore must carry
+$CommonPatterns = @(".DS_Store", "._*", ".Spotlight-V100", ".Trashes", "Icon?", "Thumbs.db", "ehthumbs.db", "desktop.ini", '$RECYCLE.BIN/', "*.lnk", ".directory", ".vs/", "*.zip", "*.pem", "*.pfx", "id_ed25519")
+
+function Assert-CommonGitignore {
+    param([string]$File)
+    if (!(Test-Path $File)) { throw "$File missing" }
+    $lines = Get-Content $File
+    foreach ($pattern in $CommonPatterns) {
+        if ($lines -notcontains $pattern) { throw "$File missing common pattern: $pattern" }
+    }
+}
+
 try {
     # Test dotnet template (default)
     Write-Host "🔹 Testing dotnet template..." -ForegroundColor Cyan
     dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet test-dotnet
-    if (!(Test-Path "test-dotnet/.gitignore")) { throw "dotnet .gitignore missing" }
+    Assert-CommonGitignore "test-dotnet/.gitignore"
     if (!(Test-Path "test-dotnet/omnisharp.json")) { throw "dotnet omnisharp.json missing" }
 
     # Test node template
@@ -31,28 +43,33 @@ try {
     dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet -t node test-node
     if (!(Test-Path "test-node/package.json")) { throw "node package.json missing" }
     if (!(Test-Path "test-node/index.js")) { throw "node index.js missing" }
+    Assert-CommonGitignore "test-node/.gitignore"
 
     # Test python template
     Write-Host "🔹 Testing python template..." -ForegroundColor Cyan
     dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet --template python test-python
     if (!(Test-Path "test-python/main.py")) { throw "python main.py missing" }
     if (!(Test-Path "test-python/requirements.txt")) { throw "python requirements.txt missing" }
+    Assert-CommonGitignore "test-python/.gitignore"
 
     # Test ruby template
     Write-Host "🔹 Testing ruby template..." -ForegroundColor Cyan
     dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet --type ruby test-ruby
     if (!(Test-Path "test-ruby/Gemfile")) { throw "ruby Gemfile missing" }
     if (!(Test-Path "test-ruby/main.rb")) { throw "ruby main.rb missing" }
+    Assert-CommonGitignore "test-ruby/.gitignore"
 
     # Test markdown template
     Write-Host "🔹 Testing markdown template..." -ForegroundColor Cyan
     dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet -t markdown test-markdown
     if (!(Test-Path "test-markdown/README.md")) { throw "markdown README.md missing" }
+    Assert-CommonGitignore "test-markdown/.gitignore"
 
     # Test universal template
     Write-Host "🔹 Testing universal template..." -ForegroundColor Cyan
     dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet -t universal test-universal
     if (!(Test-Path "test-universal/README.md")) { throw "universal README.md missing" }
+    Assert-CommonGitignore "test-universal/.gitignore"
 
     # Test dry-run mode
     Write-Host "🔹 Testing dry-run mode..." -ForegroundColor Cyan
@@ -112,6 +129,7 @@ try {
     Write-Host "🎉 All integration tests passed!" -ForegroundColor Green
     Write-Host "✅ Tested templates: dotnet, node, python, ruby, markdown, universal" -ForegroundColor Green
     Write-Host "✅ Tested features: dry-run, force, quiet, space handling, flags after folder name, error handling, help, version, list-templates" -ForegroundColor Green
+    Write-Host "✅ Verified common .gitignore patterns across every template" -ForegroundColor Green
 }
 catch {
     Write-Host "❌ Test failed: $_" -ForegroundColor Red

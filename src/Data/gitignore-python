@@ -1,4 +1,71 @@
-# Python specific ignores
+# ---------------------------------------------------------------
+# Common ignores: operating system, editors, archives, secrets
+# ---------------------------------------------------------------
+
+# macOS
+.DS_Store
+._*
+.AppleDouble
+.LSOverride
+.Spotlight-V100
+.Trashes
+.fseventsd
+Icon?
+
+# Windows
+Thumbs.db
+ehthumbs.db
+desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Linux
+*~
+.directory
+.fuse_hidden*
+.nfs*
+
+# Editors and IDEs
+.vs/
+.idea/
+*.swp
+*.swo
+*.sublime-workspace
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Logs and temp files
+*.log
+*.tmp
+
+# Release archives
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.7z
+*.rar
+
+# Environment files and secrets
+.env
+.env.*
+!.env.example
+!.env.sample
+*.pem
+*.pfx
+*.p12
+*.key
+id_rsa
+id_ed25519
+
+# ---------------------------------------------------------------
+# Python
+# ---------------------------------------------------------------
+
+# Byte-compiled files
 __pycache__/
 *.py[cod]
 *$py.class
@@ -42,16 +109,9 @@ coverage.xml
 .pytest_cache/
 
 # Virtual environments
-.env
 .venv
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
