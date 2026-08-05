@@ -23,6 +23,9 @@ echo "✅ Testing all template types..."
 # Patterns every template's .gitignore must carry
 COMMON_PATTERNS=(".DS_Store" "._*" ".Spotlight-V100" ".Trashes" "Icon?" "Thumbs.db" "ehthumbs.db" "desktop.ini" '$RECYCLE.BIN/' "*.lnk" ".directory" ".vs/" "*.zip" "*.pem" "*.pfx" "id_ed25519")
 
+# Visual Studio patterns that belong to the dotnet template alone
+DOTNET_ONLY_PATTERNS=("*.rsuser" "*.suo" "[Bb]in/" "[Oo]bj/" '**/[Pp]ackages/*')
+
 assert_common_gitignore() {
     local file="$1"
     [[ -f "$file" ]] || { echo "❌ $file missing"; exit 1; }
@@ -31,16 +34,32 @@ assert_common_gitignore() {
     done
 }
 
+assert_has_dotnet_patterns() {
+    local file="$1"
+    for pattern in "${DOTNET_ONLY_PATTERNS[@]}"; do
+        grep -qxF "$pattern" "$file" || { echo "❌ $file missing .NET pattern: $pattern"; exit 1; }
+    done
+}
+
+assert_no_dotnet_patterns() {
+    local file="$1"
+    for pattern in "${DOTNET_ONLY_PATTERNS[@]}"; do
+        ! grep -qxF "$pattern" "$file" || { echo "❌ $file should not carry .NET pattern: $pattern"; exit 1; }
+    done
+}
+
 # Test markdown template (default)
 echo "🔹 Testing markdown template (default)..."
 dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet test-default-markdown
 [[ -f "test-default-markdown/README.md" ]] || { echo "❌ default markdown README.md missing"; exit 1; }
 assert_common_gitignore "test-default-markdown/.gitignore"
+assert_no_dotnet_patterns "test-default-markdown/.gitignore"
 
 # Test dotnet template
 echo "🔹 Testing dotnet template..."
 dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet --template dotnet test-dotnet
 assert_common_gitignore "test-dotnet/.gitignore"
+assert_has_dotnet_patterns "test-dotnet/.gitignore"
 [[ -f "test-dotnet/omnisharp.json" ]] || { echo "❌ dotnet omnisharp.json missing"; exit 1; }
 
 # Test node template
@@ -49,6 +68,7 @@ dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --
 [[ -f "test-node/package.json" ]] || { echo "❌ node package.json missing"; exit 1; }
 [[ -f "test-node/index.js" ]] || { echo "❌ node index.js missing"; exit 1; }
 assert_common_gitignore "test-node/.gitignore"
+assert_no_dotnet_patterns "test-node/.gitignore"
 
 # Test python template
 echo "🔹 Testing python template..."
@@ -56,6 +76,7 @@ dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --
 [[ -f "test-python/main.py" ]] || { echo "❌ python main.py missing"; exit 1; }
 [[ -f "test-python/requirements.txt" ]] || { echo "❌ python requirements.txt missing"; exit 1; }
 assert_common_gitignore "test-python/.gitignore"
+assert_no_dotnet_patterns "test-python/.gitignore"
 
 # Test ruby template
 echo "🔹 Testing ruby template..."
@@ -63,18 +84,21 @@ dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --
 [[ -f "test-ruby/Gemfile" ]] || { echo "❌ ruby Gemfile missing"; exit 1; }
 [[ -f "test-ruby/main.rb" ]] || { echo "❌ ruby main.rb missing"; exit 1; }
 assert_common_gitignore "test-ruby/.gitignore"
+assert_no_dotnet_patterns "test-ruby/.gitignore"
 
 # Test markdown template
 echo "🔹 Testing markdown template..."
 dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet -t markdown test-markdown
 [[ -f "test-markdown/README.md" ]] || { echo "❌ markdown README.md missing"; exit 1; }
 assert_common_gitignore "test-markdown/.gitignore"
+assert_no_dotnet_patterns "test-markdown/.gitignore"
 
 # Test universal template
 echo "🔹 Testing universal template..."
 dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet -t universal test-universal
 [[ -f "test-universal/README.md" ]] || { echo "❌ universal README.md missing"; exit 1; }
 assert_common_gitignore "test-universal/.gitignore"
+assert_no_dotnet_patterns "test-universal/.gitignore"
 
 # Test dry-run mode
 echo "🔹 Testing dry-run mode..."
@@ -142,3 +166,4 @@ echo "🎉 All integration tests passed!"
 echo "✅ Tested templates: dotnet, node, python, ruby, markdown, universal"
 echo "✅ Tested features: dry-run, force, quiet, space handling, flags after folder name, error handling, help, version, list-templates"
 echo "✅ Verified common .gitignore patterns across every template"
+echo "✅ Verified Visual Studio patterns stay in the dotnet template only"

@@ -437,7 +437,7 @@ internal static class Program
         return new TemplateFile[]
         {
             new("README.md", "README.md", "Project documentation"),
-            new("gitignore", ".gitignore", "Basic git ignore patterns"),
+            new("gitignore-universal", ".gitignore", "Basic git ignore patterns"),
             new("gitattributes-universal", ".gitattributes", "Git attributes for universal projects"),
             new("editorconfig-universal", ".editorconfig", "Editor configuration for universal projects")
         };

@@ -9,7 +9,7 @@
     <ToolCommandName>seedfolder</ToolCommandName>
     <PackageOutputPath>./nupkg</PackageOutputPath>
     <NoDefaultExcludes>true</NoDefaultExcludes>
-    <Version>1.5.0</Version>
+    <Version>1.6.0</Version>
     <Title>solrevdev.seedfolder</Title>
     <Description>.NET Core Global Tool that creates a folder and copies dotfiles into it therefore seeding a folder.</Description>
     <PackageDescription>.NET Core Global Tool that creates a folder and copies dotfiles into it therefore seeding a folder.</PackageDescription>
@@ -50,6 +50,7 @@
     <Content Remove="Data/gitattributes-markdown" />
     <Content Remove="Data/gitattributes-universal" />
     <Content Remove="Data/gitignore" />
+    <Content Remove="Data/gitignore-universal" />
     <Content Remove="Data/prettierignore" />
     <Content Remove="Data/prettierrc" />
     <Content Remove="Data/omnisharp.json" />
@@ -71,6 +72,7 @@
     <EmbeddedResource Include="Data/gitattributes-markdown" />
     <EmbeddedResource Include="Data/gitattributes-universal" />
     <EmbeddedResource Include="Data/gitignore" />
+    <EmbeddedResource Include="Data/gitignore-universal" />
     <EmbeddedResource Include="Data/prettierignore" />
     <EmbeddedResource Include="Data/prettierrc" />
     <EmbeddedResource Include="Data/omnisharp.json" />
