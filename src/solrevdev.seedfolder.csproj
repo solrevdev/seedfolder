@@ -4,12 +4,17 @@
     <OutputType>Exe</OutputType>
     <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
+    <!-- Roll-forward does not cross major version boundaries by default, so a
+         tool built for one major will not start when only a newer major is
+         installed. Without this the tool breaks the day a user moves to a
+         runtime we do not target. -->
+    <RollForward>Major</RollForward>
     <ImplicitUsings>enable</ImplicitUsings>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>seedfolder</ToolCommandName>
     <PackageOutputPath>./nupkg</PackageOutputPath>
     <NoDefaultExcludes>true</NoDefaultExcludes>
-    <Version>1.6.0</Version>
+    <Version>1.6.1</Version>
     <Title>solrevdev.seedfolder</Title>
     <Description>.NET Core Global Tool that creates a folder and copies dotfiles into it therefore seeding a folder.</Description>
     <PackageDescription>.NET Core Global Tool that creates a folder and copies dotfiles into it therefore seeding a folder.</PackageDescription>
