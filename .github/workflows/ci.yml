@@ -30,6 +30,9 @@ jobs:
     build:
         if: github.event_name == 'pull_request' || (github.event_name == 'push' && contains(toJson(github.event.commits), '***NO_CI***') == false && contains(toJson(github.event.commits), '[ci skip]') == false && contains(toJson(github.event.commits), '[skip ci]') == false)
         runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            id-token: write
         outputs:
             publication_succeeded: ${{ steps.publish.outputs.succeeded }}
         env:
@@ -83,11 +86,18 @@ jobs:
                 echo "version=${version}" >> "$GITHUB_OUTPUT"
                 echo "package=${package}" >> "$GITHUB_OUTPUT"
 
+            - name: log in to NuGet
+              id: nuget
+              if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+              uses: NuGet/login@v1
+              with:
+                user: solrevdev
+
             - name: publish NuGet
               id: publish
               if: github.event_name == 'push' && github.ref == 'refs/heads/master'
               env:
-                NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+                NUGET_API_KEY: ${{ steps.nuget.outputs.NUGET_API_KEY }}
                 PACKAGE: ${{ steps.package.outputs.package }}
               run: |
                 dotnet nuget push "$PACKAGE" \

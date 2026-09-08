@@ -42,7 +42,7 @@ dotnet run --project src/solrevdev.seedfolder.csproj -- --dry-run -t node myfold
 - A publish-capable change must use a version that is not already associated with another commit. After NuGet publication succeeds, CI creates the lightweight `v<Version>` tag for that exact master commit.
 - Release retries are accepted only when the existing tag resolves to the same commit and its csproj contains the same version.
 - Keep `actions/checkout@v5` and `actions/setup-dotnet@v5` unless a deliberate, validated action-major upgrade is required; both use the Node 24 action runtime.
-- NuGet publication uses native `dotnet nuget push --skip-duplicate` and requires the `NUGET_API_KEY` Actions secret.
+- NuGet publication uses native `dotnet nuget push --skip-duplicate` with a short-lived key from NuGet trusted publishing (`NuGet/login@v1`); the publish job needs `id-token: write` and no `NUGET_API_KEY` secret.
 - Push commits containing `***NO_CI***`, `[ci skip]`, or `[skip ci]` skip the build job. Pull-request validation is not bypassed by these markers.
 
 ## Commit messages
