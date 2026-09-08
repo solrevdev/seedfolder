@@ -70,5 +70,5 @@ Interactive mode offers date prefixing: `YYYY-MM-DD_foldername` format using `St
 ## CI/CD Integration Points
 - GitHub Actions workflow in `.github/workflows/ci.yml` handles build → pack → publish
 - Publishes with NuGet trusted publishing (OIDC) via `NuGet/login@v1`; no `NUGET_API_KEY` secret
-- Uses `rohith/publish-nuget@v2.1.1` action for NuGet deployment
+- Pushes the package with the `dotnet nuget push --skip-duplicate` CLI, not a third-party action
 - Build scripts in `build/` folder provide cross-platform local testing
