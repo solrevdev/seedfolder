@@ -2,7 +2,9 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+    <!-- The published package needs both targets; CI installs both SDKs so it ships both, and SDK 10 alone builds net10.0 only. -->
+    <TargetFrameworks>net10.0</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::VersionGreaterThanOrEquals('$(NETCoreSdkVersion)', '11.0'))">net10.0;net11.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <!-- Roll-forward does not cross major version boundaries by default, so a
          tool built for one major will not start when only a newer major is
@@ -14,16 +16,16 @@
     <ToolCommandName>seedfolder</ToolCommandName>
     <PackageOutputPath>./nupkg</PackageOutputPath>
     <NoDefaultExcludes>true</NoDefaultExcludes>
-    <Version>1.6.2</Version>
+    <Version>1.7.0</Version>
     <Title>solrevdev.seedfolder</Title>
-    <Description>.NET Core Global Tool that creates a folder and copies dotfiles into it therefore seeding a folder.</Description>
-    <PackageDescription>.NET Core Global Tool that creates a folder and copies dotfiles into it therefore seeding a folder.</PackageDescription>
+    <Description>.NET Global Tool for .NET 10 and .NET 11 that creates a folder and copies dotfiles into it therefore seeding a folder.</Description>
+    <PackageDescription>.NET Global Tool for .NET 10 and .NET 11 that creates a folder and copies dotfiles into it therefore seeding a folder.</PackageDescription>
     <Authors>solrevdev</Authors>
     <Company>solrevdev</Company>
     <RepositoryUrl>https://github.com/solrevdev/seedfolder</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageProjectUrl>https://github.com/solrevdev/seedfolder</PackageProjectUrl>
-    <PackageReleaseNotes>https://github.com/solrevdev/seedfolder/releases</PackageReleaseNotes>
+    <PackageReleaseNotes>1.7.0: Targets net10.0 and net11.0 only. Support for net8.0 and net9.0 is dropped because .NET 8 and .NET 9 left support on 10 November 2026. A machine with only the .NET 8 or .NET 9 runtime can no longer install new releases; install .NET 10 or later, or stay on 1.6.2. Full history: https://github.com/solrevdev/seedfolder/releases</PackageReleaseNotes>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
     <PackageTags>dotnetcore;dotnet;csharp;dotnet-global-tool;dotnet-global-tools;</PackageTags>

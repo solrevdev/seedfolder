@@ -1,15 +1,18 @@
 # Integration test for seedfolder - validates all template types work correctly (PowerShell)
 
+# Target framework to test; run once per entry in TargetFrameworks.
+param([string]$Framework = "net10.0")
+
 $ErrorActionPreference = "Stop"
 
-Write-Host "🚀 Starting seedfolder integration tests..." -ForegroundColor Green
+Write-Host "🚀 Starting seedfolder integration tests ($Framework)..." -ForegroundColor Green
 
 # Navigate to project root
 Set-Location "$(Split-Path $PSScriptRoot -Parent)"
 
 # Build the project
 Write-Host "📦 Building project..." -ForegroundColor Yellow
-dotnet build src/solrevdev.seedfolder.csproj --configuration Release --framework net8.0
+dotnet build src/solrevdev.seedfolder.csproj --configuration Release --framework $Framework
 
 # Create test directory
 $TestDir = "test-output"
@@ -53,14 +56,14 @@ function Assert-NoDotnetPatterns {
 try {
     # Test dotnet template
     Write-Host "🔹 Testing dotnet template..." -ForegroundColor Cyan
-    dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet --template dotnet test-dotnet
+    dotnet run --project ../src/solrevdev.seedfolder.csproj --framework $Framework -- --quiet --template dotnet test-dotnet
     Assert-CommonGitignore "test-dotnet/.gitignore"
     Assert-HasDotnetPatterns "test-dotnet/.gitignore"
     if (!(Test-Path "test-dotnet/omnisharp.json")) { throw "dotnet omnisharp.json missing" }
 
     # Test node template
     Write-Host "🔹 Testing node template..." -ForegroundColor Cyan
-    dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet -t node test-node
+    dotnet run --project ../src/solrevdev.seedfolder.csproj --framework $Framework -- --quiet -t node test-node
     if (!(Test-Path "test-node/package.json")) { throw "node package.json missing" }
     if (!(Test-Path "test-node/index.js")) { throw "node index.js missing" }
     Assert-CommonGitignore "test-node/.gitignore"
@@ -68,7 +71,7 @@ try {
 
     # Test python template
     Write-Host "🔹 Testing python template..." -ForegroundColor Cyan
-    dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet --template python test-python
+    dotnet run --project ../src/solrevdev.seedfolder.csproj --framework $Framework -- --quiet --template python test-python
     if (!(Test-Path "test-python/main.py")) { throw "python main.py missing" }
     if (!(Test-Path "test-python/requirements.txt")) { throw "python requirements.txt missing" }
     Assert-CommonGitignore "test-python/.gitignore"
@@ -76,7 +79,7 @@ try {
 
     # Test ruby template
     Write-Host "🔹 Testing ruby template..." -ForegroundColor Cyan
-    dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet --type ruby test-ruby
+    dotnet run --project ../src/solrevdev.seedfolder.csproj --framework $Framework -- --quiet --type ruby test-ruby
     if (!(Test-Path "test-ruby/Gemfile")) { throw "ruby Gemfile missing" }
     if (!(Test-Path "test-ruby/main.rb")) { throw "ruby main.rb missing" }
     Assert-CommonGitignore "test-ruby/.gitignore"
@@ -84,71 +87,71 @@ try {
 
     # Test markdown template
     Write-Host "🔹 Testing markdown template..." -ForegroundColor Cyan
-    dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet -t markdown test-markdown
+    dotnet run --project ../src/solrevdev.seedfolder.csproj --framework $Framework -- --quiet -t markdown test-markdown
     if (!(Test-Path "test-markdown/README.md")) { throw "markdown README.md missing" }
     Assert-CommonGitignore "test-markdown/.gitignore"
     Assert-NoDotnetPatterns "test-markdown/.gitignore"
 
     # Test universal template
     Write-Host "🔹 Testing universal template..." -ForegroundColor Cyan
-    dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet -t universal test-universal
+    dotnet run --project ../src/solrevdev.seedfolder.csproj --framework $Framework -- --quiet -t universal test-universal
     if (!(Test-Path "test-universal/README.md")) { throw "universal README.md missing" }
     Assert-CommonGitignore "test-universal/.gitignore"
     Assert-NoDotnetPatterns "test-universal/.gitignore"
 
     # Test dry-run mode
     Write-Host "🔹 Testing dry-run mode..." -ForegroundColor Cyan
-    dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --dry-run -t node test-dry-run
+    dotnet run --project ../src/solrevdev.seedfolder.csproj --framework $Framework -- --dry-run -t node test-dry-run
     if (Test-Path "test-dry-run") { throw "dry-run should not create directory" }
 
     # Test force mode
     Write-Host "🔹 Testing force mode..." -ForegroundColor Cyan
-    dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet -t node test-force-existing
-    dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet --force -t python test-force-existing
+    dotnet run --project ../src/solrevdev.seedfolder.csproj --framework $Framework -- --quiet -t node test-force-existing
+    dotnet run --project ../src/solrevdev.seedfolder.csproj --framework $Framework -- --quiet --force -t python test-force-existing
     if (!(Test-Path "test-force-existing/main.py")) { throw "force mode should overwrite with python template" }
 
     # Test space handling
     Write-Host "🔹 Testing space handling..." -ForegroundColor Cyan
-    dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet -t node "test space project"
+    dotnet run --project ../src/solrevdev.seedfolder.csproj --framework $Framework -- --quiet -t node "test space project"
     if (!(Test-Path "test-space-project")) { throw "space handling failed" }
 
     # Test flags after the folder name
     Write-Host "🔹 Testing flags after folder name (dry-run)..." -ForegroundColor Cyan
-    dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- test-flags-after --dry-run --quiet -t node
+    dotnet run --project ../src/solrevdev.seedfolder.csproj --framework $Framework -- test-flags-after --dry-run --quiet -t node
     if (Test-Path "test-flags-after") { throw "flags-after-folder-name dry-run should not create directory" }
 
     Write-Host "🔹 Testing flags interleaved around folder name..." -ForegroundColor Cyan
-    dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet --force -t python test-flags-interleaved --dry-run
+    dotnet run --project ../src/solrevdev.seedfolder.csproj --framework $Framework -- --quiet --force -t python test-flags-interleaved --dry-run
     if (Test-Path "test-flags-interleaved") { throw "interleaved dry-run should not create directory" }
 
     # Test error handling - unknown flag
     Write-Host "🔹 Testing error handling - unknown flag..." -ForegroundColor Cyan
-    $result = dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --bogus test-error 2>$null
+    $result = dotnet run --project ../src/solrevdev.seedfolder.csproj --framework $Framework -- --bogus test-error 2>$null
     if ($LASTEXITCODE -eq 0) { throw "Should have failed with unknown flag" }
 
     # Test error handling - invalid template type
     Write-Host "🔹 Testing error handling - invalid template..." -ForegroundColor Cyan
-    $result = dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- -t invalidtype test-error 2>$null
+    $result = dotnet run --project ../src/solrevdev.seedfolder.csproj --framework $Framework -- -t invalidtype test-error 2>$null
     if ($LASTEXITCODE -eq 0) { throw "Should have failed with invalid template type" }
 
     # Test error handling - missing template argument
     Write-Host "🔹 Testing error handling - missing template argument..." -ForegroundColor Cyan
-    $result = dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --template 2>$null
+    $result = dotnet run --project ../src/solrevdev.seedfolder.csproj --framework $Framework -- --template 2>$null
     if ($LASTEXITCODE -eq 0) { throw "Should have failed with missing template argument" }
 
     # Test help command
     Write-Host "🔹 Testing help command..." -ForegroundColor Cyan
-    dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --help >$null
+    dotnet run --project ../src/solrevdev.seedfolder.csproj --framework $Framework -- --help >$null
     if ($LASTEXITCODE -ne 0) { throw "help command failed" }
 
     # Test version command
     Write-Host "🔹 Testing version command..." -ForegroundColor Cyan
-    dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --version >$null
+    dotnet run --project ../src/solrevdev.seedfolder.csproj --framework $Framework -- --version >$null
     if ($LASTEXITCODE -ne 0) { throw "version command failed" }
 
     # Test list templates command
     Write-Host "🔹 Testing list templates command..." -ForegroundColor Cyan
-    dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --list-templates >$null
+    dotnet run --project ../src/solrevdev.seedfolder.csproj --framework $Framework -- --list-templates >$null
     if ($LASTEXITCODE -ne 0) { throw "list templates command failed" }
 
     Write-Host "🎉 All integration tests passed!" -ForegroundColor Green

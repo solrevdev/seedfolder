@@ -19,7 +19,7 @@ Template files in `src/Data/` are embedded as resources, not file system copies:
 Access via `Assembly.GetManifestResourceStream("solrevdev.seedfolder.Data.{filename}")` in `WriteFileAsync()`
 
 ### Multi-Framework Targeting
-Targets `net8.0;net9.0` for modern .NET compatibility. .NET 8 is LTS (supported until November 2026) and .NET 9 is STS (18-month support). Version bumps in `.csproj` trigger NuGet deployment.
+Targets `net10.0;net11.0`, the supported .NET versions. `global.json` pins SDK `10.0.100` with `rollForward: latestMajor`, so .NET 10 (LTS) is the baseline and the newest installed SDK is used. With SDK 11 installed the project builds `net10.0` and `net11.0`. With only SDK 10 it builds `net10.0` alone, because `TargetFrameworks` adds `net11.0` only when `NETCoreSdkVersion` is 11.0 or later. CI installs both SDKs, so the published package always holds both targets. .NET 8 and .NET 9 left support on 10 November 2026 and are no longer targeted. `RollForward` is `Major`, so the tool also runs on newer runtimes. Version bumps in `.csproj` trigger NuGet deployment on push to `master`.
 
 ## Key Development Workflows
 

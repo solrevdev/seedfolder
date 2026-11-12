@@ -4,7 +4,11 @@ This file documents the project-specific guidance for coding agents working in t
 
 ## Project overview
 
-`seedfolder` is a .NET Global Tool that creates project directories from embedded templates. The application is a single-file console program in `src/Program.cs` and targets `net8.0`, `net9.0`, and `net10.0`.
+`seedfolder` is a .NET Global Tool that creates project directories from embedded templates. The application is a single-file console program in `src/Program.cs` and targets `net10.0` and `net11.0`. Only supported .NET versions are targeted; .NET 8 and .NET 9 left support on 10 November 2026.
+
+## SDK policy
+
+`global.json` pins SDK `10.0.100` with `rollForward: latestMajor`, so .NET 10 (LTS) is the baseline and the newest installed SDK is used. With SDK 11 installed the project builds `net10.0` and `net11.0`. With only SDK 10 it builds `net10.0` alone, because `TargetFrameworks` adds `net11.0` only when `NETCoreSdkVersion` is 11.0 or later. CI installs both SDKs, so the published package always holds both targets. Do not drop the `TargetFrameworks` condition or the explicit `10.0.x` and `11.0.x` entries in `ci.yml`.
 
 ## Required validation
 
@@ -12,7 +16,8 @@ Run the same Release-mode sequence used by CI:
 
 ```bash
 dotnet build solrevdev.seedfolder.sln --configuration Release
-./tests/integration-test.sh
+./tests/integration-test.sh net10.0
+./tests/integration-test.sh net11.0  # needs SDK 11
 dotnet pack solrevdev.seedfolder.sln -c Release --no-build --include-source --include-symbols
 ```
 
