@@ -436,10 +436,11 @@ git commit -m "Initial commit"
 
 ## Requirements
 
-This tool requires **.NET 8.0, .NET 9.0, or .NET 10.0 SDK** to be installed on your system.
+This tool requires the **.NET 10.0 or .NET 11.0 SDK** to be installed on your system.
 
 - **Supported Platforms**: Windows, macOS, Linux
-- **Runtime**: .NET 8.0 or later
+- **Runtime**: .NET 10.0 or later
+- **Older runtimes**: From 1.7.0 the tool no longer targets .NET 8 or .NET 9, which left support on 10 November 2026. A machine with only .NET 8 or .NET 9 cannot install new releases. Install .NET 10 or later, or pin version 1.6.2.
 - **Installation**: Via .NET Global Tools
 
 ## Installation
@@ -494,8 +495,9 @@ dotnet run --project src/solrevdev.seedfolder.csproj --framework net10.0 -- --te
 # Build the project
 dotnet build
 
-# Run tests
-dotnet test
+# Run the integration tests for each target framework
+./tests/integration-test.sh net10.0
+./tests/integration-test.sh net11.0
 
 # Create package
 dotnet pack -c release

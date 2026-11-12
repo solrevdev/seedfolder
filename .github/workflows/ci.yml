@@ -53,15 +53,17 @@ jobs:
               uses: actions/setup-dotnet@v5
               with:
                   dotnet-version: |
-                    8.0.x
-                    9.0.x
                     10.0.x
+                    11.0.x
 
             - name: dotnet build
               run: dotnet build solrevdev.seedfolder.sln --configuration Release
 
-            - name: run integration tests
-              run: ./tests/integration-test.sh
+            - name: run integration tests (net10.0)
+              run: ./tests/integration-test.sh net10.0
+
+            - name: run integration tests (net11.0)
+              run: ./tests/integration-test.sh net11.0
 
             - name: dotnet pack
               run: dotnet pack solrevdev.seedfolder.sln -c Release --no-build --include-source --include-symbols

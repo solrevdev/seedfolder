@@ -4,7 +4,7 @@ This file documents the project-specific guidance for coding agents working in t
 
 ## Project overview
 
-`seedfolder` is a .NET Global Tool that creates project directories from embedded templates. The application is a single-file console program in `src/Program.cs` and targets `net8.0`, `net9.0`, and `net10.0`.
+`seedfolder` is a .NET Global Tool that creates project directories from embedded templates. The application is a single-file console program in `src/Program.cs` and targets `net10.0` and `net11.0`. Only supported .NET versions are targeted; .NET 8 and .NET 9 left support on 10 November 2026.
 
 ## Required validation
 
@@ -12,7 +12,8 @@ Run the same Release-mode sequence used by CI:
 
 ```bash
 dotnet build solrevdev.seedfolder.sln --configuration Release
-./tests/integration-test.sh
+./tests/integration-test.sh net10.0
+./tests/integration-test.sh net11.0
 dotnet pack solrevdev.seedfolder.sln -c Release --no-build --include-source --include-symbols
 ```
 

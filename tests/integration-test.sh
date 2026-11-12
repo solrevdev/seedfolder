@@ -3,14 +3,17 @@
 
 set -e
 
-echo "🚀 Starting seedfolder integration tests..."
+# Target framework to test; CI runs this once per entry in TargetFrameworks.
+FRAMEWORK="${1:-net10.0}"
+
+echo "🚀 Starting seedfolder integration tests ($FRAMEWORK)..."
 
 # Navigate to project root
 cd "$(dirname "$0")/.."
 
 # Build the project
 echo "📦 Building project..."
-dotnet build src/solrevdev.seedfolder.csproj --configuration Release --framework net8.0
+dotnet build src/solrevdev.seedfolder.csproj --configuration Release --framework "$FRAMEWORK"
 
 # Create test directory
 TEST_DIR="test-output"
@@ -50,21 +53,21 @@ assert_no_dotnet_patterns() {
 
 # Test markdown template (default)
 echo "🔹 Testing markdown template (default)..."
-dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet test-default-markdown
+dotnet run --project ../src/solrevdev.seedfolder.csproj --framework "$FRAMEWORK" -- --quiet test-default-markdown
 [[ -f "test-default-markdown/README.md" ]] || { echo "❌ default markdown README.md missing"; exit 1; }
 assert_common_gitignore "test-default-markdown/.gitignore"
 assert_no_dotnet_patterns "test-default-markdown/.gitignore"
 
 # Test dotnet template
 echo "🔹 Testing dotnet template..."
-dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet --template dotnet test-dotnet
+dotnet run --project ../src/solrevdev.seedfolder.csproj --framework "$FRAMEWORK" -- --quiet --template dotnet test-dotnet
 assert_common_gitignore "test-dotnet/.gitignore"
 assert_has_dotnet_patterns "test-dotnet/.gitignore"
 [[ -f "test-dotnet/omnisharp.json" ]] || { echo "❌ dotnet omnisharp.json missing"; exit 1; }
 
 # Test node template
 echo "🔹 Testing node template..."
-dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet -t node test-node
+dotnet run --project ../src/solrevdev.seedfolder.csproj --framework "$FRAMEWORK" -- --quiet -t node test-node
 [[ -f "test-node/package.json" ]] || { echo "❌ node package.json missing"; exit 1; }
 [[ -f "test-node/index.js" ]] || { echo "❌ node index.js missing"; exit 1; }
 assert_common_gitignore "test-node/.gitignore"
@@ -72,7 +75,7 @@ assert_no_dotnet_patterns "test-node/.gitignore"
 
 # Test python template
 echo "🔹 Testing python template..."
-dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet --template python test-python
+dotnet run --project ../src/solrevdev.seedfolder.csproj --framework "$FRAMEWORK" -- --quiet --template python test-python
 [[ -f "test-python/main.py" ]] || { echo "❌ python main.py missing"; exit 1; }
 [[ -f "test-python/requirements.txt" ]] || { echo "❌ python requirements.txt missing"; exit 1; }
 assert_common_gitignore "test-python/.gitignore"
@@ -80,7 +83,7 @@ assert_no_dotnet_patterns "test-python/.gitignore"
 
 # Test ruby template
 echo "🔹 Testing ruby template..."
-dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet --type ruby test-ruby
+dotnet run --project ../src/solrevdev.seedfolder.csproj --framework "$FRAMEWORK" -- --quiet --type ruby test-ruby
 [[ -f "test-ruby/Gemfile" ]] || { echo "❌ ruby Gemfile missing"; exit 1; }
 [[ -f "test-ruby/main.rb" ]] || { echo "❌ ruby main.rb missing"; exit 1; }
 assert_common_gitignore "test-ruby/.gitignore"
@@ -88,75 +91,75 @@ assert_no_dotnet_patterns "test-ruby/.gitignore"
 
 # Test markdown template
 echo "🔹 Testing markdown template..."
-dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet -t markdown test-markdown
+dotnet run --project ../src/solrevdev.seedfolder.csproj --framework "$FRAMEWORK" -- --quiet -t markdown test-markdown
 [[ -f "test-markdown/README.md" ]] || { echo "❌ markdown README.md missing"; exit 1; }
 assert_common_gitignore "test-markdown/.gitignore"
 assert_no_dotnet_patterns "test-markdown/.gitignore"
 
 # Test universal template
 echo "🔹 Testing universal template..."
-dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet -t universal test-universal
+dotnet run --project ../src/solrevdev.seedfolder.csproj --framework "$FRAMEWORK" -- --quiet -t universal test-universal
 [[ -f "test-universal/README.md" ]] || { echo "❌ universal README.md missing"; exit 1; }
 assert_common_gitignore "test-universal/.gitignore"
 assert_no_dotnet_patterns "test-universal/.gitignore"
 
 # Test dry-run mode
 echo "🔹 Testing dry-run mode..."
-dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --dry-run -t node test-dry-run
+dotnet run --project ../src/solrevdev.seedfolder.csproj --framework "$FRAMEWORK" -- --dry-run -t node test-dry-run
 [[ ! -d "test-dry-run" ]] || { echo "❌ dry-run should not create directory"; exit 1; }
 
 # Test force mode
 echo "🔹 Testing force mode..."
-dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet -t node test-force-existing
-dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet --force -t python test-force-existing
+dotnet run --project ../src/solrevdev.seedfolder.csproj --framework "$FRAMEWORK" -- --quiet -t node test-force-existing
+dotnet run --project ../src/solrevdev.seedfolder.csproj --framework "$FRAMEWORK" -- --quiet --force -t python test-force-existing
 [[ -f "test-force-existing/main.py" ]] || { echo "❌ force mode should overwrite with python template"; exit 1; }
 
 # Test space handling
 echo "🔹 Testing space handling..."
-dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet -t node "test space project"
+dotnet run --project ../src/solrevdev.seedfolder.csproj --framework "$FRAMEWORK" -- --quiet -t node "test space project"
 [[ -d "test-space-project" ]] || { echo "❌ space handling failed"; exit 1; }
 
 # Test flags after the folder name
 echo "🔹 Testing flags after folder name (dry-run)..."
-dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- test-flags-after --dry-run --quiet -t node
+dotnet run --project ../src/solrevdev.seedfolder.csproj --framework "$FRAMEWORK" -- test-flags-after --dry-run --quiet -t node
 [[ ! -d "test-flags-after" ]] || { echo "❌ flags-after-folder-name dry-run should not create directory"; exit 1; }
 
 echo "🔹 Testing flags interleaved around folder name..."
-dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --quiet --force -t python test-flags-interleaved --dry-run
+dotnet run --project ../src/solrevdev.seedfolder.csproj --framework "$FRAMEWORK" -- --quiet --force -t python test-flags-interleaved --dry-run
 [[ ! -d "test-flags-interleaved" ]] || { echo "❌ interleaved dry-run should not create directory"; exit 1; }
 
 # Test error handling - unknown flag
 echo "🔹 Testing error handling - unknown flag..."
-if dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --bogus test-error 2>/dev/null; then
+if dotnet run --project ../src/solrevdev.seedfolder.csproj --framework "$FRAMEWORK" -- --bogus test-error 2>/dev/null; then
     echo "❌ Should have failed with unknown flag"
     exit 1
 fi
 
 # Test error handling - invalid template type
 echo "🔹 Testing error handling - invalid template..."
-if dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- -t invalidtype test-error 2>/dev/null; then
+if dotnet run --project ../src/solrevdev.seedfolder.csproj --framework "$FRAMEWORK" -- -t invalidtype test-error 2>/dev/null; then
     echo "❌ Should have failed with invalid template type"
     exit 1
 fi
 
 # Test error handling - missing template argument
 echo "🔹 Testing error handling - missing template argument..."
-if dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --template 2>/dev/null; then
+if dotnet run --project ../src/solrevdev.seedfolder.csproj --framework "$FRAMEWORK" -- --template 2>/dev/null; then
     echo "❌ Should have failed with missing template argument"
     exit 1
 fi
 
 # Test help command
 echo "🔹 Testing help command..."
-dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --help > /dev/null || { echo "❌ help command failed"; exit 1; }
+dotnet run --project ../src/solrevdev.seedfolder.csproj --framework "$FRAMEWORK" -- --help > /dev/null || { echo "❌ help command failed"; exit 1; }
 
 # Test version command
 echo "🔹 Testing version command..."
-dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --version > /dev/null || { echo "❌ version command failed"; exit 1; }
+dotnet run --project ../src/solrevdev.seedfolder.csproj --framework "$FRAMEWORK" -- --version > /dev/null || { echo "❌ version command failed"; exit 1; }
 
 # Test list templates command
 echo "🔹 Testing list templates command..."
-dotnet run --project ../src/solrevdev.seedfolder.csproj --framework net8.0 -- --list-templates > /dev/null || { echo "❌ list templates command failed"; exit 1; }
+dotnet run --project ../src/solrevdev.seedfolder.csproj --framework "$FRAMEWORK" -- --list-templates > /dev/null || { echo "❌ list templates command failed"; exit 1; }
 
 # Clean up
 cd ..
