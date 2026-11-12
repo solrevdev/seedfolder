@@ -436,7 +436,7 @@ git commit -m "Initial commit"
 
 ## Requirements
 
-This tool requires the **.NET 10.0 or .NET 11.0 SDK** to be installed on your system.
+This tool requires the **.NET 10.0 SDK or later** to be installed on your system. .NET 11 is used when present.
 
 - **Supported Platforms**: Windows, macOS, Linux
 - **Runtime**: .NET 10.0 or later
@@ -490,6 +490,10 @@ dotnet run --project src/solrevdev.seedfolder.csproj --framework net10.0 -- --te
 # If you omit `--` and run `dotnet run --project ... --help`, the .NET CLI help will be shown.
 ```
 
+### SDK policy
+
+`global.json` pins SDK `10.0.100` with `rollForward: latestMajor`, so .NET 10 (LTS) is the baseline and the newest installed SDK is used. With SDK 11 installed the project builds `net10.0` and `net11.0`. With only SDK 10 it builds `net10.0` alone, because `TargetFrameworks` adds `net11.0` only when `NETCoreSdkVersion` is 11.0 or later. CI installs both SDKs, so the published package always holds both targets.
+
 ### Building and Testing
 ```bash
 # Build the project
@@ -497,7 +501,7 @@ dotnet build
 
 # Run the integration tests for each target framework
 ./tests/integration-test.sh net10.0
-./tests/integration-test.sh net11.0
+./tests/integration-test.sh net11.0  # needs SDK 11
 
 # Create package
 dotnet pack -c release

@@ -2,7 +2,9 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net10.0;net11.0</TargetFrameworks>
+    <!-- The published package needs both targets; CI installs both SDKs so it ships both, and SDK 10 alone builds net10.0 only. -->
+    <TargetFrameworks>net10.0</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::VersionGreaterThanOrEquals('$(NETCoreSdkVersion)', '11.0'))">net10.0;net11.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <!-- Roll-forward does not cross major version boundaries by default, so a
          tool built for one major will not start when only a newer major is
