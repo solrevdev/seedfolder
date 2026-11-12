@@ -68,6 +68,21 @@ jobs:
             - name: dotnet pack
               run: dotnet pack solrevdev.seedfolder.sln -c Release --no-build --include-source --include-symbols
 
+            - name: check package targets
+              shell: bash
+              run: |
+                set -euo pipefail
+                # The targets depend on the SDK that built them; fail rather than
+                # ship a package missing one.
+                version=$(sed -n 's:.*<Version>\(.*\)</Version>.*:\1:p' src/solrevdev.seedfolder.csproj)
+                # Name the exact file: a glob would also match the symbols package,
+                # and unzip reads any extra argument as a member filter.
+                LISTING=$(unzip -l "src/nupkg/solrevdev.seedfolder.${version}.nupkg")
+                for tfm in net10.0 net11.0; do
+                  grep -q "tools/$tfm/any/solrevdev.seedfolder.dll" <<<"$LISTING" \
+                    || { echo "Package is missing tools/$tfm" >&2; exit 1; }
+                done
+
             - name: verify versioned package
               id: package
               shell: bash
